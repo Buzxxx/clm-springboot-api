@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: vendor_portal
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vendor_db
+    username: spring_user
+    password: passw0rd
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+
+      show-sql: false
+
+pagination:
+  page-size: 20
