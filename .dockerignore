@@ -1,6 +1,7 @@
-#Ignore Gradle Build Directories
-build/
-target/
+#Ignore everything in build/
+build/*
+# But include the build/libs directory
+!build/libs/
 
 #Ignore temporary files
 *.log
