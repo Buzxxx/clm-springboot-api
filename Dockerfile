@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy Gradle wrapper and other necessary files
 COPY . .
 
+# Make gradlew executable
+RUN chmod +x ./gradlew
+
 # Build the JAR file using the Gradle wrapper
 RUN ./gradlew clean build
 
