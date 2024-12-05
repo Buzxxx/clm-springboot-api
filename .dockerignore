@@ -1,0 +1,17 @@
+#Ignore Gradle Build Directories
+build/
+target/
+
+#Ignore temporary files
+*.log
+*.tmp
+
+#Ignore IDE/project files
+*.idea/
+
+#Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+#Ignore dependency caches
+.gradle/

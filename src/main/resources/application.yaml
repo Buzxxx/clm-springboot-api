@@ -1,6 +1,6 @@
 spring:
   application:
-    name: vendor_portal
+    name: contract_lifecycle_management
 
   datasource:
     url: jdbc:postgresql://localhost:5432/vendor_db
