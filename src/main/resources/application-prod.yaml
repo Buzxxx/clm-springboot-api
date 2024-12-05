@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}  # Replace with the Render-provided database URL
+    username: ${DATABASE_USER}  # Replace with the Render-provided username
+    password: ${DATABASE_PASSWORD}  # Replace with the Render-provided password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10  # Adjust this based on your needs
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: contract_lifecycle_management
+
+  profiles:
+    active: prod
+
+pagination:
+  page-size: 20
