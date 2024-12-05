@@ -16,5 +16,7 @@ spring:
 
       show-sql: false
 
+  profiles:
+    active: prod
 pagination:
   page-size: 20
