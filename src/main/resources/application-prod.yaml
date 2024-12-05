@@ -10,8 +10,7 @@ spring:
     hibernate:
       ddl-auto: update
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: contract_lifecycle_management
 
