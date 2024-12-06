@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url:  jdbc:${DATABASE_URL}  # Replace with the Render-provided database URL
+    url:  jdbc:postgresql://dpg-ct8sfbq3esus7386152g-a:5432/contract_lifecylce_management_db  # Replace with the Render-provided database URL
     username: ${DATABASE_USER}  # Replace with the Render-provided username
     password: ${DATABASE_PASSWORD}  # Replace with the Render-provided password
     driver-class-name: org.postgresql.Driver
