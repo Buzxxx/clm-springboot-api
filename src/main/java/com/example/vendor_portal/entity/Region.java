@@ -1,12 +1,14 @@
 package com.example.vendor_portal.entity;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Entity
+@NoArgsConstructor
 public class Region {
 
     @Id
@@ -15,4 +17,7 @@ public class Region {
 
     private String name;
 
+    public Region(String name) {
+        this.name = name;
+    }
 }

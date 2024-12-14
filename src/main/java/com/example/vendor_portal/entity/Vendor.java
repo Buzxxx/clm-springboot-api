@@ -1,9 +1,6 @@
 package com.example.vendor_portal.entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,22 +27,40 @@ public class Vendor {
     private int vendorMatchPercentage;
     private boolean isVerified;
 
-    @ElementCollection
-    private List<Integer> regions;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "vendor_regions",
+    joinColumns = @JoinColumn(name="vendor_id"),
+    inverseJoinColumns = @JoinColumn(name = "region_id"))
+    private List<Region> regions;
 
-    @ElementCollection
-    private List<Integer> capabilities;
+    @JoinTable(name = "vendor_capabilities",
+            joinColumns = @JoinColumn(name="vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "capability_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Capability> capabilities;
 
-    @ElementCollection
-    private List<Integer> organizationalFunctions;
+    @JoinTable(name = "vendor_organization_functions",
+            joinColumns = @JoinColumn(name="vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "organizational_function_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<OrganizationalFunction> organizationalFunctions;
 
-    @ElementCollection
-    private List<Integer> contractTypes;
+    @JoinTable(name = "vendor_contract_types",
+            joinColumns = @JoinColumn(name="vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "contract_type_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<ContractType> contractTypes;
 
-    @ElementCollection
-    private List<Integer> licensingModels;
+    @JoinTable(name = "vendor_licensing_models",
+            joinColumns = @JoinColumn(name="vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "licensing_model_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<LicensingModel> licensingModels;
 
-    @ElementCollection
-    private List<Integer> integrations;
+    @JoinTable(name = "vendor_integrations",
+            joinColumns = @JoinColumn(name="vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "integration_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Integration> integrations;
 
 }

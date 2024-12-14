@@ -1,5 +1,6 @@
 package com.example.vendor_portal.controller;
 
+import com.example.vendor_portal.dtos.VendorDTO;
 import com.example.vendor_portal.entity.Vendor;
 import com.example.vendor_portal.service.VendorService;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class VendorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Vendor>> getVendors(@RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<List<VendorDTO>> getVendors(@RequestParam(defaultValue = "0") int page) {
 
         PageRequest pageable = PageRequest.of(page, pageSize);
 

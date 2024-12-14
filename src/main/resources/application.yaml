@@ -3,7 +3,7 @@ spring:
     name: contract_lifecycle_management
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/vendor_db
+    url: jdbc:postgresql://localhost:5432/contract_lifecycle_management_db
     username: spring_user
     password: passw0rd
     driver-class-name: org.postgresql.Driver

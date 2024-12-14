@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url:  jdbc:postgresql://dpg-ct8sfbq3esus7386152g-a:5432/contract_lifecylce_management_db  # Replace with the Render-provided database URL
-    username: ${DATABASE_USER}  # Replace with the Render-provided username
-    password: ${DATABASE_PASSWORD}  # Replace with the Render-provided password
+    url:  jdbc:postgresql://contract-management-lifecyle-server.postgres.database.azure.com:5432/contract_lifecycle_management_db
+    username: admin_user
+    password: passw0rd
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10  # Adjust this based on your needs
