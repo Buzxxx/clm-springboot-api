@@ -18,7 +18,7 @@ jobs:
           java-version: 21
           distribution: temurin
 
-      - name: Set execute permissions for Gradle wrapper
+      - name: Set the execute permissions for Gradle wrapper
         run: chmod +x ./gradlew
 
       - name: Setup Gradle
