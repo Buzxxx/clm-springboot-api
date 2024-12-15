@@ -28,7 +28,7 @@ jobs:
         run: ./gradlew build
 
       - name: Deploy to Azure
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v4
         with:
             app-name: 'ContractLifecycleManagement'
             publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
