@@ -1,21 +1,35 @@
 package com.clm.vendor.utils;
 
-import com.clm.dtos.VendorDTO;
+import com.clm.vendor.api.VendorDTO;
 import com.clm.vendor.entity.Vendor;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface VendorMapper {
 
-    VendorMapper INSTANCE = Mappers.getMapper(VendorMapper.class);
+@Component
+public class VendorMapper {
 
-    VendorDTO toVendorDTO(Vendor vendor);
+    public VendorDTO toDTO(Vendor vendor) {
+        return VendorDTO.builder()
+                .id(vendor.getId())
+                .categoryOptions(vendor.getCategoryOptions())
+                .build();
+    }
+
+    public Vendor toEntity(VendorDTO dto) {
+        Vendor vendor = new Vendor();
+        vendor.setId(dto.getId());
+        vendor.setCategoryOptions(dto.getCategoryOptions());
+        return vendor;
+    }
+
+    public List<VendorDTO> toDTOList(List<Vendor> vendors) {
+        return vendors.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 
 
 }
