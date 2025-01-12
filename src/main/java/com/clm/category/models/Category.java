@@ -1,4 +1,4 @@
-package com.clm.category.entity;
+package com.clm.category.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +19,9 @@ public class Category {
 
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    private String description;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Option> options = new HashSet<>();
 
     public void addOption(Option option) {

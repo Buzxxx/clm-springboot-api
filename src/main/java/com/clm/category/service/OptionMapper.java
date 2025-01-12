@@ -1,7 +1,7 @@
-package com.clm.category.utils;
+package com.clm.category.service;
 
-import com.clm.category.api.OptionDTO;
-import com.clm.category.entity.Option;
+import com.clm.category.models.OptionDTO;
+import com.clm.category.models.Option;
 import org.springframework.stereotype.Component;
 
 @Component

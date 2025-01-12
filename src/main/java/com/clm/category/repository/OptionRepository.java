@@ -1,6 +1,6 @@
 package com.clm.category.repository;
 
-import com.clm.category.entity.Option;
+import com.clm.category.models.Option;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

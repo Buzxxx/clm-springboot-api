@@ -1,6 +1,6 @@
 package com.clm.category.service;
 
-import com.clm.category.api.OptionDTO;
+import com.clm.category.models.OptionDTO;
 
 import java.util.List;
 

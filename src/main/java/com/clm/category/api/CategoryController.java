@@ -1,5 +1,6 @@
 package com.clm.category.api;
 
+import com.clm.category.models.CategoryDTO;
 import com.clm.category.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

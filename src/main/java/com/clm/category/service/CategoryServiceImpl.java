@@ -1,17 +1,16 @@
 package com.clm.category.service;
 
-import com.clm.category.api.CategoryDTO;
-import com.clm.category.entity.Category;
-import com.clm.category.entity.Option;
+import com.clm.category.models.CategoryDTO;
+import com.clm.category.models.Category;
+import com.clm.category.models.Option;
 import com.clm.category.repository.CategoryRepository;
 import com.clm.category.repository.OptionRepository;
-import com.clm.category.utils.CategoryMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -31,9 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryDTO> findAll() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toDTO)
-                .collect(Collectors.toList());
+        List<Category> allCategories = categoryRepository.findAllWithOptions();
+        return categoryMapper.toDTOList(allCategories);
     }
 
     @Override
@@ -42,6 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByIdWithOptions(id)
                 .map(categoryMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+    }
+
+    @Override
+    public List<CategoryDTO> getCategoriesWithOptionsByIds(Set<Long> ids) {
+        List<Category> categories = categoryRepository.findByIdsWithOptions(ids);
+        return categoryMapper.toDTOList(categories);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.clm.vendor.api;
 
+import com.clm.vendor.models.VendorDTO;
+import com.clm.vendor.models.VendorResponseDTO;
 import com.clm.vendor.service.VendorService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,22 +20,22 @@ public class VendorController {
     }
 
     @PostMapping
-    public ResponseEntity<VendorDTO> createVendor(@RequestBody VendorDTO vendorDTO) {
+    public ResponseEntity<VendorResponseDTO> createVendor(@RequestBody VendorDTO vendorDTO) {
         return new ResponseEntity<>(vendorService.createVendor(vendorDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VendorDTO> getVendor(@PathVariable Long id) {
+    public ResponseEntity<VendorResponseDTO> getVendor(@PathVariable Long id) {
         return ResponseEntity.ok(vendorService.getVendor(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<VendorDTO>> getAllVendors() {
+    public ResponseEntity<List<VendorResponseDTO>> getAllVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VendorDTO> updateVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
+    public ResponseEntity<VendorResponseDTO> updateVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
         return ResponseEntity.ok(vendorService.updateVendor(id, vendorDTO));
     }
 

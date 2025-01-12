@@ -1,6 +1,6 @@
 package com.clm.vendor.repository;
 
-import com.clm.vendor.entity.Vendor;
+import com.clm.vendor.models.Vendor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,5 @@
-package com.clm.vendor.entity;
+package com.clm.vendor.models;
 
-import com.clm.vendor.utils.VendorMapConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +15,10 @@ public class Vendor {
     @Id
     @GeneratedValue
     private Long id;
+
+    private String name;
+
+    private String description;
 
     @Column(columnDefinition = "jsonb")
     @Convert(converter = VendorMapConverter.class)

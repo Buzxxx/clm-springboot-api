@@ -1,4 +1,4 @@
-package com.clm.category.api;
+package com.clm.category.models;
 
 import lombok.Builder;
 import lombok.Data;

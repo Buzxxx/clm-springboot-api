@@ -1,11 +1,10 @@
 package com.clm.category.service;
 
-import com.clm.category.api.OptionDTO;
-import com.clm.category.entity.Category;
-import com.clm.category.entity.Option;
+import com.clm.category.models.OptionDTO;
+import com.clm.category.models.Category;
+import com.clm.category.models.Option;
 import com.clm.category.repository.CategoryRepository;
 import com.clm.category.repository.OptionRepository;
-import com.clm.category.utils.OptionMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,53 +1,75 @@
 package com.clm.vendor.service;
 
-import com.clm.vendor.api.VendorDTO;
-import com.clm.vendor.entity.Vendor;
+import com.clm.category.models.CategoryDTO;
+import com.clm.category.models.OptionDTO;
+import com.clm.vendor.models.VendorDTO;
+import com.clm.vendor.models.VendorResponseDTO;
+import com.clm.vendor.models.Vendor;
+import com.clm.vendor.processor.VendorDataProcessor;
 import com.clm.vendor.repository.VendorRepository;
-import com.clm.vendor.utils.VendorMapper;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class VendorServiceImpl implements VendorService{
 
     private final VendorRepository vendorRepository;
     private final VendorMapper vendorMapper;
+    private final VendorDataProcessor vendorDataProcessor;
 
-    public VendorServiceImpl(VendorRepository vendorRepository, VendorMapper vendorMapper) {
+    public VendorServiceImpl(VendorRepository vendorRepository, VendorMapper vendorMapper, VendorDataProcessor vendorDataProcessor) {
         this.vendorRepository = vendorRepository;
         this.vendorMapper = vendorMapper;
+        this.vendorDataProcessor = vendorDataProcessor;
     }
 
     @Override
-    public VendorDTO createVendor(VendorDTO vendorDTO) {
+    public VendorResponseDTO createVendor(VendorDTO vendorDTO) {
         Vendor vendor = vendorMapper.toEntity(vendorDTO);
-        return vendorMapper.toDTO(vendorRepository.save(vendor));
+        Vendor savedVendor = vendorRepository.save(vendor);
+        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+                vendorDataProcessor.buildCategoryOptions(savedVendor);
+        return vendorMapper.toResponseDTO(savedVendor, categoryOptions);
     }
 
     @Override
-    public VendorDTO getVendor(Long id) {
+    public VendorResponseDTO getVendor(Long id) {
         Vendor vendor = vendorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + id));
-        return vendorMapper.toDTO(vendor);
+        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+                vendorDataProcessor.buildCategoryOptions(vendor);
+        return vendorMapper.toResponseDTO(vendor, categoryOptions);
     }
 
     @Override
-    public List<VendorDTO> getAllVendors() {
-        return vendorMapper.toDTOList(vendorRepository.findAll());
+    public List<VendorResponseDTO> getAllVendors() {
+        List<Vendor> vendors = vendorRepository.findAll();
+
+        return vendors.stream()
+                .map(vendor -> {
+                    Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+                            vendorDataProcessor.buildCategoryOptions(vendor);
+                    return vendorMapper.toResponseDTO(vendor, categoryOptions);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public VendorDTO updateVendor(Long id, VendorDTO vendorDTO) {
+    public VendorResponseDTO updateVendor(Long id, VendorDTO vendorDTO) {
         if (!vendorRepository.existsById(id)) {
             throw new EntityNotFoundException("Vendor not found with id: " + id);
         }
         Vendor vendor = vendorMapper.toEntity(vendorDTO);
-        vendor.setId(id);
-        return vendorMapper.toDTO(vendorRepository.save(vendor));
+        Vendor savedVendor = vendorRepository.save(vendor);
+        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+                vendorDataProcessor.buildCategoryOptions(vendor);
+        return vendorMapper.toResponseDTO(savedVendor, categoryOptions);
     }
 
     @Override

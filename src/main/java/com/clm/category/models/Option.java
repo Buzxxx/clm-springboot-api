@@ -1,4 +1,4 @@
-package com.clm.category.entity;
+package com.clm.category.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;

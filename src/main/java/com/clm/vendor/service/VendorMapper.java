@@ -1,0 +1,33 @@
+package com.clm.vendor.service;
+
+import com.clm.category.models.CategoryDTO;
+import com.clm.category.models.OptionDTO;
+import com.clm.vendor.models.VendorDTO;
+import com.clm.vendor.models.VendorResponseDTO;
+import com.clm.vendor.models.Vendor;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+
+
+@Component
+public class VendorMapper {
+
+    public VendorResponseDTO toResponseDTO(Vendor vendor, Map<CategoryDTO, List<OptionDTO>> categoryOptions) {
+        return VendorResponseDTO.builder()
+                .id(vendor.getId())
+                .name(vendor.getName())
+                .description(vendor.getDescription())
+                .categoryOptions(categoryOptions)
+                .build();
+    }
+
+    public Vendor toEntity(VendorDTO dto) {
+        Vendor vendor = new Vendor();
+        vendor.setId(dto.getId());
+        vendor.setCategoryOptions(dto.getCategoryOptions());
+        return vendor;
+    }
+
+}

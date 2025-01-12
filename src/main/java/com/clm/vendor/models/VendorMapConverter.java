@@ -1,4 +1,4 @@
-package com.clm.vendor.utils;
+package com.clm.vendor.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
