@@ -6,12 +6,14 @@ import com.clm.matching.models.VendorMatchResponseDTO;
 import com.clm.matching.processor.MatchEngineProcessor;
 import com.clm.vendor.models.VendorResponseDTO;
 import com.clm.vendor.service.VendorService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Service
 public class MatchEngineServiceImpl implements MatchEngineService{
 
     private final VendorService vendorService;
