@@ -11,5 +11,7 @@ import java.util.Map;
 public class VendorDTO {
 
     private Long id;
+    private String name;
+    private String description;
     private Map<Long, List<Long>> categoryOptions;
 }
