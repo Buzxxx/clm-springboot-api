@@ -25,7 +25,8 @@ public class VendorMapper {
 
     public Vendor toEntity(VendorDTO dto) {
         Vendor vendor = new Vendor();
-        vendor.setId(dto.getId());
+        vendor.setName(dto.getName());
+        vendor.setDescription(dto.getDescription());
         vendor.setCategoryOptions(dto.getCategoryOptions());
         return vendor;
     }
