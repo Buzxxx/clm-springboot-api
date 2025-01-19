@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url:  jdbc:postgresql://contract-management-lifecyle-server.postgres.database.azure.com:5432/contract_lifecycle_management_db
+    url:  jdbc:postgresql://contractlifecyclemanagementserver.postgres.database.azure.com:5432/contract_lifecycle_management_db
     username: admin_user
     password: letmeconnect1234@
     driver-class-name: org.postgresql.Driver
