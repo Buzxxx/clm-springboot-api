@@ -16,5 +16,5 @@ public class VendorResponseDTO {
     private String name;
     private String description;
 
-    private Map<CategoryDTO, List<OptionDTO>> categoryOptions;
+    private List<CategoryDTO> categoryOptions;
 }

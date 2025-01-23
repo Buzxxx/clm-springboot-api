@@ -3,95 +3,101 @@ package com.clm.matching.processor;
 import com.clm.category.models.CategoryDTO;
 import com.clm.category.models.OptionDTO;
 import com.clm.matching.models.CategoryMatchResponseDTO;
-import com.clm.matching.models.OptionMatchResponseDTO;
 import com.clm.matching.models.VendorMatchResponseDTO;
 import com.clm.vendor.models.VendorResponseDTO;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
 public class MatchEngineProcessor {
 
-    public Map<Long, CategoryDTO> mapCategoriesById(List<CategoryDTO> categoryList) {
-        return categoryList.stream()
-                .collect(Collectors.toMap(CategoryDTO::getId, category -> category));
+    public List<CategoryDTO> prepareFilteredCategories(Map<Long, List<Long>> userSelections, Map<Long, CategoryDTO> categoryMap) {
+        return categoryMap.values().stream()
+                .filter(category -> userSelections.containsKey(category.getId())) // Only include categories in userSelections
+                .map(category -> {
+                    List<Long> selectedOptionIds = userSelections.get(category.getId());
+                    Set<OptionDTO> filteredOptions = category.getOptions().stream()
+                            .filter(option -> selectedOptionIds.contains(option.getId())) // Only include matching options
+                            .collect(Collectors.toSet());
+
+                    return new CategoryDTO(
+                            category.getId(),
+                            category.getName(),
+                            category.getDescription(),
+                            filteredOptions
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
-    public List<VendorMatchResponseDTO> calculateMatches(
-            List<VendorResponseDTO> vendors,
-            Map<Long, CategoryDTO> categoryMap,
-            Map<Long, List<Long>> userSelections) {
+    public List<VendorMatchResponseDTO> prepareVendorResponses(Map<Long, List<Long>> userSelections,
+                                                          Map<Long, CategoryDTO> categoryMap,
+                                                          List<VendorResponseDTO> vendors) {
+        return vendors.stream()
+                .map(vendor -> {
+                    List<CategoryMatchResponseDTO> categoryMatches = prepareCategoryMatches(
+                            userSelections,
+                            vendor.getCategoryOptions()
+                    );
 
-        List<VendorMatchResponseDTO> matchResponses = new ArrayList<>();
+                    double vendorMatchPercentage = calculateVendorMatchPercentage(categoryMatches);
 
-        for(VendorResponseDTO vendor : vendors) {
-            Map<CategoryDTO, List<OptionDTO>> vendorCategories = vendor.getCategoryOptions();
-
-            double totalMatchPercentage = 0.0;
-            List<CategoryMatchResponseDTO> categoryMatchResponseDTOS = new ArrayList<>();
-
-            for(Map.Entry<Long, List<Long>> entry: userSelections.entrySet()) {
-                Long categoryId = entry.getKey();
-                List<Long> selectedOptionIds = entry.getValue();
-
-                CategoryDTO category = categoryMap.get(categoryId);
-                List<OptionDTO> vendorOptions = vendorCategories.getOrDefault(category, List.of());
-
-                CategoryMatchResponseDTO categoryMatchResponseDTO = calculateCategoryMatch(
-                        category,
-                        vendorOptions,
-                        selectedOptionIds
-                );
-                categoryMatchResponseDTOS.add(categoryMatchResponseDTO);
-
-                totalMatchPercentage += categoryMatchResponseDTO.getMatchPercentage();
-
-            }
-
-            double overallMatchPercentage = totalMatchPercentage / userSelections.size();
-
-            matchResponses.add(VendorMatchResponseDTO.builder()
-                    .vendorDTO(vendor)
-                    .matchPercentage(overallMatchPercentage)
-                    .categories(categoryMatchResponseDTOS)
-                    .build());
-        }
-        return matchResponses;
+                    return new VendorMatchResponseDTO(
+                            vendor.getId(),
+                            vendor.getName(),
+                            vendor.getDescription(),
+                            vendorMatchPercentage,
+                            categoryMatches
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
-    private CategoryMatchResponseDTO calculateCategoryMatch(
-            CategoryDTO category,
-            List<OptionDTO> vendorOptions,
-            List<Long> selectedOptionIds) {
 
-        int matchedOptions = 0;
+    public List<CategoryMatchResponseDTO> prepareCategoryMatches(Map<Long, List<Long>> userSelections,
+                                                         List<CategoryDTO> vendorCategories) {
+        // Create a map of vendor categories for quick access
+        Map<Long, CategoryDTO> vendorCategoryMap = vendorCategories.stream()
+                .collect(Collectors.toMap(CategoryDTO::getId, Function.identity()));
 
-        List<OptionMatchResponseDTO> optionMatchResponseDTOS = new ArrayList<>();
+        // Process all user-selected categories
+        return userSelections.keySet().stream()
+                .map(categoryId -> {
+                    CategoryDTO vendorCategory = vendorCategoryMap.get(categoryId);
+                    List<Long> selectedOptionIds = userSelections.get(categoryId);
 
-        for(Long selectedOptionId: selectedOptionIds) {
-            OptionDTO selectedOption = category.getOptions().stream()
-                    .filter(option -> option.getId().equals(selectedOptionId))
-                    .findFirst()
-                    .orElse(null);
+                    if (vendorCategory != null) {
+                        // Vendor has this category, calculate matched options
+                        List<Long> matchedOptions = vendorCategory.getOptions().stream()
+                                .map(OptionDTO::getId)
+                                .filter(selectedOptionIds::contains)
+                                .collect(Collectors.toList());
 
-            boolean isMatch = vendorOptions.stream()
-                    .anyMatch(option -> option.getId().equals(selectedOptionId));
-            if (isMatch) matchedOptions++;
+                        double matchPercentage = matchedOptions.isEmpty() ? 0.0
+                                : (matchedOptions.size() * 100.0 / selectedOptionIds.size());
 
-            optionMatchResponseDTOS.add(OptionMatchResponseDTO.builder().optionDTO(selectedOption).isMatch(isMatch).build());
-
-        }
-
-        double categoryMatchPercentage = (matchedOptions / (double) selectedOptionIds.size()) * 100;
-
-        return CategoryMatchResponseDTO.builder()
-                .categoryDTO(category)
-                .matchPercentage(categoryMatchPercentage)
-                .options(optionMatchResponseDTOS)
-                .build();
+                        return new CategoryMatchResponseDTO(categoryId, matchPercentage, matchedOptions);
+                    } else {
+                        // Vendor does not have this category, set matchPercentage to 0.0
+                        return new CategoryMatchResponseDTO(categoryId, 0.0, Collections.emptyList());
+                    }
+                })
+                .collect(Collectors.toList());
     }
+
+    public double calculateVendorMatchPercentage(List<CategoryMatchResponseDTO> categoryMatches) {
+        if (categoryMatches.isEmpty()) return 0.0;
+        double totalPercentage = categoryMatches.stream()
+                .mapToDouble(CategoryMatchResponseDTO::getMatchPercentage)
+                .sum();
+        return totalPercentage / categoryMatches.size();
+    }
+
+
 }

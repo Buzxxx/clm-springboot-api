@@ -22,7 +22,7 @@ public class VendorDataProcessor {
     /**
      * Build the category-options map for a given vendor.
      */
-    public Map<CategoryDTO, List<OptionDTO>> buildCategoryOptions(Vendor vendor) {
+    public List<CategoryDTO> buildCategoryOptions(Vendor vendor) {
         Map<Long, List<Long>> vendorCategoryOptions = vendor.getCategoryOptions();
 
         // Fetch categories with options using CategoryService
@@ -30,15 +30,23 @@ public class VendorDataProcessor {
                 vendorCategoryOptions.keySet()
         );
 
+        categories.forEach(category -> {
+            List<OptionDTO> filteredOptions = category.getOptions().stream()
+                    .filter(option -> vendorCategoryOptions.getOrDefault(
+                            category.getId(), List.of()
+                    ).contains(option.getId()))
+                    .toList();
+        });
+        return categories;
         // Build category-options mapping
-        return categories.stream()
-                .collect(Collectors.toMap(
-                        category -> category,
-                        category -> category.getOptions().stream()
-                                .filter(option -> vendorCategoryOptions.getOrDefault(
-                                        category.getId(), List.of()
-                                ).contains(option.getId()))
-                                .collect(Collectors.toList())
-                ));
+//        return categories.stream()
+//                .collect(Collectors.toMap(
+//                        category -> category,
+//                        category -> category.getOptions().stream()
+//                                .filter(option -> vendorCategoryOptions.getOrDefault(
+//                                        category.getId(), List.of()
+//                                ).contains(option.getId()))
+//                                .collect(Collectors.toList())
+//                ));
     }
 }

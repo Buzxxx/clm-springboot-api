@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 public class OptionMatchResponseDTO {
 
-    private OptionDTO optionDTO;
-    private boolean isMatch;
+    private Long id;
+    private String name;    private boolean isMatch;
 }

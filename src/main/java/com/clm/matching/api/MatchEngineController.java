@@ -22,8 +22,8 @@ public class MatchEngineController {
     }
 
     @PostMapping("/match")
-    public ResponseEntity<List<VendorMatchResponseDTO>> getMatchResults(@RequestBody Map<Long, List<Long>> userSelections) {
-        List<VendorMatchResponseDTO> matchResults = matchEngineService.getMatchResults(userSelections);
+    public ResponseEntity<Map<String, Object>> getMatchResults(@RequestBody Map<Long, List<Long>> userSelections) {
+        Map<String, Object> matchResults = matchEngineService.getMatchResults(userSelections);
         return ResponseEntity.ok(matchResults);
     }
 }

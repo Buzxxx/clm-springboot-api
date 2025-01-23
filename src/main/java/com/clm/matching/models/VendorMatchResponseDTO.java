@@ -1,16 +1,21 @@
 package com.clm.matching.models;
 
-import com.clm.vendor.models.VendorResponseDTO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VendorMatchResponseDTO {
 
-    private VendorResponseDTO vendorDTO;
+    private Long id;
+    private String name;
+    private String description;
     private double matchPercentage;
-    List<CategoryMatchResponseDTO> categories;
+    List<CategoryMatchResponseDTO> categoryMatches;
 }

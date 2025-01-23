@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class VendorServiceImpl implements VendorService{
 
     private final VendorRepository vendorRepository;
@@ -30,10 +29,11 @@ public class VendorServiceImpl implements VendorService{
     }
 
     @Override
+    @Transactional
     public VendorResponseDTO createVendor(VendorDTO vendorDTO) {
         Vendor vendor = vendorMapper.toEntity(vendorDTO);
         Vendor savedVendor = vendorRepository.save(vendor);
-        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+        List<CategoryDTO> categoryOptions =
                 vendorDataProcessor.buildCategoryOptions(savedVendor);
         return vendorMapper.toResponseDTO(savedVendor, categoryOptions);
     }
@@ -42,7 +42,7 @@ public class VendorServiceImpl implements VendorService{
     public VendorResponseDTO getVendor(Long id) {
         Vendor vendor = vendorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + id));
-        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+        List<CategoryDTO> categoryOptions =
                 vendorDataProcessor.buildCategoryOptions(vendor);
         return vendorMapper.toResponseDTO(vendor, categoryOptions);
     }
@@ -53,7 +53,7 @@ public class VendorServiceImpl implements VendorService{
 
         return vendors.stream()
                 .map(vendor -> {
-                    Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+                    List<CategoryDTO> categoryOptions =
                             vendorDataProcessor.buildCategoryOptions(vendor);
                     return vendorMapper.toResponseDTO(vendor, categoryOptions);
                 })
@@ -67,7 +67,7 @@ public class VendorServiceImpl implements VendorService{
         }
         Vendor vendor = vendorMapper.toEntity(vendorDTO);
         Vendor savedVendor = vendorRepository.save(vendor);
-        Map<CategoryDTO, List<OptionDTO>> categoryOptions =
+        List<CategoryDTO> categoryOptions =
                 vendorDataProcessor.buildCategoryOptions(vendor);
         return vendorMapper.toResponseDTO(savedVendor, categoryOptions);
     }

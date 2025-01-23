@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class VendorMapper {
 
-    public VendorResponseDTO toResponseDTO(Vendor vendor, Map<CategoryDTO, List<OptionDTO>> categoryOptions) {
+    public VendorResponseDTO toResponseDTO(Vendor vendor, List<CategoryDTO> categoryOptions) {
         return VendorResponseDTO.builder()
                 .id(vendor.getId())
                 .name(vendor.getName())

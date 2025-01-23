@@ -8,6 +8,7 @@ import com.clm.vendor.models.VendorResponseDTO;
 import com.clm.vendor.service.VendorService;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,7 +28,7 @@ public class MatchEngineServiceImpl implements MatchEngineService{
     }
 
     @Override
-    public List<VendorMatchResponseDTO> getMatchResults(Map<Long, List<Long>> userSelections) {
+    public Map<String, Object>  getMatchResults(Map<Long, List<Long>> userSelections) {
         List<VendorResponseDTO> vendors = vendorService.getAllVendors();
 
         List<CategoryDTO> categories = categoryService.findAll();
@@ -35,7 +36,14 @@ public class MatchEngineServiceImpl implements MatchEngineService{
         Map<Long, CategoryDTO> categoryMap = categories.stream()
                 .collect(Collectors.toMap(CategoryDTO::getId, Function.identity()));
 
-        return matchEngineProcessor.calculateMatches(vendors, categoryMap, userSelections);
+        List<CategoryDTO> filteredCategories = matchEngineProcessor.prepareFilteredCategories(userSelections, categoryMap);
+        List<VendorMatchResponseDTO> vendorResponses = matchEngineProcessor.prepareVendorResponses(userSelections, categoryMap, vendors);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("categories", filteredCategories);
+        response.put("vendors", vendorResponses);
+
+        return response;
     }
 
 

@@ -15,7 +15,9 @@ public class VendorMapConverter implements AttributeConverter<Map<Long, List<Lon
     @Override
     public String convertToDatabaseColumn(Map<Long, List<Long>> attribute) {
         try {
-            return objectMapper.writeValueAsString(attribute);
+            String json = objectMapper.writeValueAsString(attribute);
+
+            return json == null ? null : json + "::jsonb";
         } catch (Exception e) {
             throw new RuntimeException("Error converting map to JSON", e);
         }
