@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/contract_lifecycle_management_db
-    username: postgre
+    username: postgres
     password: letmeconnect
     driver-class-name: org.postgresql.Driver
 
