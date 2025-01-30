@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: contract-lifecycle-management
-  profiles:
-    active: prod # Change to 'prod' for production
