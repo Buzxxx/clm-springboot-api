@@ -1,11 +1,11 @@
 spring:
   datasource:
-    url:  jdbc:postgresql://contract-lifecycle-management.postgres.database.azure.com:5432/contract_lifecycle_management_db
+    url: jdbc:postgresql://contract-lifecycle-management.postgres.database.azure.com:5432/contract_lifecycle_management_db
     username: admin_user
     password: letmeconnect1234@
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10  # Adjust this based on your needs
+      maximum-pool-size: 10 # Adjust this based on your needs
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,7 +13,6 @@ spring:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: contract_lifecycle_management
-
 
 pagination:
   page-size: 20

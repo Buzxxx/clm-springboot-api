@@ -1,22 +1,5 @@
 spring:
   application:
-    name: contract_lifecycle_management
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/contract_lifecycle_management_db
-    username: spring_user
-    password: passw0rd
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-      properties:
-        hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-
-      show-sql: false
-
+    name: contract-lifecycle-management
   profiles:
-    active: prod
-pagination:
-  page-size: 20
+    active: prod # Change to 'prod' for production
