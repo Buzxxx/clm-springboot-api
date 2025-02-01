@@ -3,7 +3,7 @@ package com.clm.matching.service;
 import com.clm.category.models.CategoryDTO;
 import com.clm.category.service.CategoryService;
 import com.clm.matching.models.VendorMatchOverviewResponseDTO;
-import com.clm.matching.models.VendorMatchResponseDTO;
+import com.clm.matching.models.VendorDetailMatchResponseDTO;
 import com.clm.matching.processor.MatchEngineProcessor;
 import com.clm.vendor.models.VendorResponseDTO;
 import com.clm.vendor.service.VendorService;
@@ -29,8 +29,8 @@ public class MatchEngineServiceImpl implements MatchEngineService{
     }
 
     @Override
-    public Map<String, Object>  getMatchResults(Map<Long, List<Long>> userSelections) {
-        List<VendorResponseDTO> vendors = vendorService.getAllVendors();
+    public Map<String, Object>  getMatchResults(Map<Long, List<Long>> userSelections, List<Long> vendorIds) {
+        List<VendorResponseDTO> vendors = vendorService.getVendorByIds(vendorIds);
 
         List<CategoryDTO> categories = categoryService.findAll();
 
@@ -38,7 +38,7 @@ public class MatchEngineServiceImpl implements MatchEngineService{
                 .collect(Collectors.toMap(CategoryDTO::getId, Function.identity()));
 
         List<CategoryDTO> filteredCategories = matchEngineProcessor.prepareFilteredCategories(userSelections, categoryMap);
-        List<VendorMatchResponseDTO> vendorResponses = matchEngineProcessor.prepareVendorResponses(userSelections, categoryMap, vendors);
+        List<VendorDetailMatchResponseDTO> vendorResponses = matchEngineProcessor.prepareVendorResponses(userSelections, categoryMap, vendors);
 
         Map<String, Object> response = new HashMap<>();
         response.put("categories", filteredCategories);

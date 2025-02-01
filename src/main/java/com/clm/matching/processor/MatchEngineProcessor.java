@@ -5,7 +5,7 @@ import com.clm.category.models.OptionDTO;
 import com.clm.matching.models.CategoryMatchResponseDTO;
 import com.clm.matching.models.OptionMatchResponseDTO;
 import com.clm.matching.models.VendorMatchOverviewResponseDTO;
-import com.clm.matching.models.VendorMatchResponseDTO;
+import com.clm.matching.models.VendorDetailMatchResponseDTO;
 import com.clm.vendor.models.VendorResponseDTO;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +35,9 @@ public class MatchEngineProcessor {
                 .collect(Collectors.toList());
     }
 
-    public List<VendorMatchResponseDTO> prepareVendorResponses(Map<Long, List<Long>> userSelections,
-                                                          Map<Long, CategoryDTO> categoryMap,
-                                                          List<VendorResponseDTO> vendors) {
+    public List<VendorDetailMatchResponseDTO> prepareVendorResponses(Map<Long, List<Long>> userSelections,
+                                                                     Map<Long, CategoryDTO> categoryMap,
+                                                                     List<VendorResponseDTO> vendors) {
         return vendors.stream()
                 .map(vendor -> {
                     List<CategoryMatchResponseDTO> categoryMatches = prepareCategoryMatches(
@@ -47,7 +47,7 @@ public class MatchEngineProcessor {
 
                     double vendorMatchPercentage = calculateVendorMatchPercentage(categoryMatches);
 
-                    return new VendorMatchResponseDTO(
+                    return new VendorDetailMatchResponseDTO(
                             vendor.getId(),
                             vendor.getName(),
                             vendor.getDescription(),
@@ -128,6 +128,7 @@ public class MatchEngineProcessor {
                             allOptions
                     );
                 })
+                .sorted(Comparator.comparingDouble(VendorMatchOverviewResponseDTO::getMatchPercentage).reversed())
                 .toList();
     }
 
