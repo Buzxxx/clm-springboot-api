@@ -3,14 +3,13 @@ package com.clm.matching.processor;
 import com.clm.category.models.CategoryDTO;
 import com.clm.category.models.OptionDTO;
 import com.clm.matching.models.CategoryMatchResponseDTO;
+import com.clm.matching.models.OptionMatchResponseDTO;
+import com.clm.matching.models.VendorMatchOverviewResponseDTO;
 import com.clm.matching.models.VendorMatchResponseDTO;
 import com.clm.vendor.models.VendorResponseDTO;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -97,6 +96,39 @@ public class MatchEngineProcessor {
                 .mapToDouble(CategoryMatchResponseDTO::getMatchPercentage)
                 .sum();
         return totalPercentage / categoryMatches.size();
+    }
+
+    public List<VendorMatchOverviewResponseDTO> prepareMatchOverview(Map<Long, List<Long>> userSelections, List<VendorResponseDTO> vendors) {
+        return vendors.stream()
+                .map(vendor -> {
+                    List<OptionMatchResponseDTO> allOptions = new ArrayList<>();
+                    int matchedOptionCount = 0;
+                    int totalUserSelectedOptions = userSelections.values().stream().mapToInt(List::size).sum();
+
+                    for (CategoryDTO category : vendor.getCategoryOptions()) {
+                        List<Long> selectedOptionIds = userSelections.getOrDefault(category.getId(), Collections.emptyList());
+
+                        List<OptionMatchResponseDTO> vendorOptions = category.getOptions().stream()
+                                .map(option -> new OptionMatchResponseDTO(
+                                        option.getId(),
+                                        option.getName(),
+                                        selectedOptionIds.contains(option.getId())
+                                )).toList();
+                        allOptions.addAll(vendorOptions);
+                        matchedOptionCount += vendorOptions.stream().filter(OptionMatchResponseDTO::isMatch).count();
+                    }
+
+                    double matchPercentage = totalUserSelectedOptions == 0 ? 0.0 : (matchedOptionCount * 100.0 / totalUserSelectedOptions);
+
+                    return new VendorMatchOverviewResponseDTO(
+                            vendor.getId(),
+                            vendor.getName(),
+                            vendor.getDescription(),
+                            matchPercentage,
+                            allOptions
+                    );
+                })
+                .toList();
     }
 
 

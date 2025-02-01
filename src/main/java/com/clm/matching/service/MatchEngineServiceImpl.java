@@ -2,6 +2,7 @@ package com.clm.matching.service;
 
 import com.clm.category.models.CategoryDTO;
 import com.clm.category.service.CategoryService;
+import com.clm.matching.models.VendorMatchOverviewResponseDTO;
 import com.clm.matching.models.VendorMatchResponseDTO;
 import com.clm.matching.processor.MatchEngineProcessor;
 import com.clm.vendor.models.VendorResponseDTO;
@@ -44,6 +45,12 @@ public class MatchEngineServiceImpl implements MatchEngineService{
         response.put("vendors", vendorResponses);
 
         return response;
+    }
+
+    @Override
+    public List<VendorMatchOverviewResponseDTO> getMatchOverview(Map<Long, List<Long>> userSelections) {
+        List<VendorResponseDTO> vendors = vendorService.getAllVendors();
+        return matchEngineProcessor.prepareMatchOverview(userSelections, vendors);
     }
 
 
