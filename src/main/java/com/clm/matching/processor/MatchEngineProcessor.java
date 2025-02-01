@@ -128,6 +128,7 @@ public class MatchEngineProcessor {
                             allOptions
                     );
                 })
+                .sorted(Comparator.comparingDouble(VendorMatchOverviewResponseDTO::getMatchPercentage).reversed())
                 .toList();
     }
 
