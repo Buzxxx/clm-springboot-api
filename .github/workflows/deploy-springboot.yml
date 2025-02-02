@@ -45,7 +45,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/${{ env.JAR_NAME }}"
-          target: "/home/gnelson/projects/springboot-app/"
+          target: "/home/gnelson/projects/springboot-app/build/libs/"
+          strip_components: 2
 
       - name: Verify JAR File on VM After Transfer
         uses: appleboy/ssh-action@v1.0.3
@@ -55,8 +56,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "Verifying JAR on VM..."
-            ls -lh /home/gnelson/projects/springboot-app/builds/libs/
-            if [[ ! -f "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}" ]]; then
+            ls -lh /home/gnelson/projects/springboot-app/build/libs/
+            if [[ ! -f "/home/gnelson/projects/springboot-app/build/libs/${{ env.JAR_NAME }}" ]]; then
               echo "Error: JAR file not found on VM after SCP!"
               exit 1
             fi
@@ -68,8 +69,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            JAR_PATH="/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
-            SYMLINK_PATH="/home/gnelson/projects/springboot-app/builds/libs/clm-api.jar"
+            JAR_PATH="/home/gnelson/projects/springboot-app/build/libs/${{ env.JAR_NAME }}"
+            SYMLINK_PATH="/home/gnelson/projects/springboot-app/build/libs/clm-api.jar"
 
             echo "Updating symlink..."
             ln -sf "$JAR_PATH" "$SYMLINK_PATH"
@@ -84,6 +85,6 @@ jobs:
             pm2 save
 
             echo "Cleaning up old JAR files..."
-            ls -tp /home/gnelson/projects/springboot-app/builds/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
+            ls -tp /home/gnelson/projects/springboot-app/build/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
 
             echo "Spring Boot restarted successfully with PM2!"
