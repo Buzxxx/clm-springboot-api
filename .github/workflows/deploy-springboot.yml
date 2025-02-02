@@ -3,7 +3,7 @@ name: Deploy Spring Boot to Linux VM
 on:
   push:
     branches:
-      - main # Trigger deployment on push to main
+      - main
 
 jobs:
   deploy:
@@ -27,6 +27,9 @@ jobs:
       - name: Verify JAR File Before Copying
         run: ls -lah build/libs/
 
+      - name: Set Versioned JAR Filename
+        run: echo "JAR_NAME=clm-api-$(date +%Y%m%d-%H%M%S).jar" >> $GITHUB_ENV
+
       - name: Copy JAR to VM
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -34,22 +37,32 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/*.jar"
-          target: "~/app/"
+          target: "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
 
-      - name: Restart Application on VM using PM2
+      - name: Update Symlink and Restart App on VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            JAR_PATH=~/app/build/libs/contract_lifecycle_management-0.0.1-SNAPSHOT.jar
+            JAR_PATH="/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
+            SYMLINK_PATH="/home/gnelson/projects/springboot-app/builds/libs/clm-api.jar"
 
-            if [[ -f "$JAR_PATH" ]]; then
-              pm2 list | grep clm-api && pm2 restart clm-api || pm2 start "java -jar $JAR_PATH --spring.profiles.active=prod" --name clm-api
-              pm2 save
-              echo "Spring Boot restarted successfully with PM2 as 'clm-api'!"
+            # Update Symlink
+            ln -sf "$JAR_PATH" "$SYMLINK_PATH"
+
+            # Restart PM2
+            if pm2 list | grep -q clm-api; then
+              pm2 restart clm-api
             else
-              echo "Error: JAR file not found at $JAR_PATH"
-              exit 1
+              pm2 start "java -jar $SYMLINK_PATH --spring.profiles.active=prod" --name clm-api
             fi
+
+            # Save PM2 State
+            pm2 save
+
+            # Remove old JARs (keep last 5)
+            ls -tp /home/gnelson/projects/springboot-app/builds/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
+
+            echo "Spring Boot restarted successfully with PM2!"
