@@ -24,24 +24,17 @@ jobs:
           chmod +x gradlew
           ./gradlew clean build -x test
 
-      - name: Debug: Start Verification
-        run: echo "Starting debug process"
-
       - name: Verify JAR File Before Copying
         run: |
+          set -e
           echo "Checking JAR file before copying..."
           ls -lh build/libs/
-          if ls build/libs/*.jar 1> /dev/null 2>&1; then
-            file build/libs/*.jar
-          else
-            echo "Error: No valid JAR file found!"
-            exit 1
-          fi
-          JAR_FILE=$(ls build/libs/*.jar | grep -E 'SNAPSHOT|\.jar' | grep -v plain | head -n 1 | xargs basename || true)
+          JAR_FILE=$(ls build/libs/*.jar 2>/dev/null | grep -E 'SNAPSHOT|\.jar' | grep -v plain | head -n 1 | xargs basename || true)
           if [[ -z "$JAR_FILE" ]]; then
             echo "Error: No valid JAR file found!"
             exit 1
           fi
+          file "build/libs/$JAR_FILE"
           echo "JAR_NAME=$JAR_FILE" >> $GITHUB_ENV
           echo "Using JAR: $JAR_FILE"
 
