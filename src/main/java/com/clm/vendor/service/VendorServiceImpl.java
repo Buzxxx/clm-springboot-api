@@ -61,6 +61,19 @@ public class VendorServiceImpl implements VendorService{
     }
 
     @Override
+    public List<VendorResponseDTO> getVendorByIds(List<Long> ids) {
+        List<Vendor> vendors = vendorRepository.findAllById(ids);
+
+        return vendors.stream()
+                .map(vendor -> {
+                    List<CategoryDTO> categoryOptions =
+                            vendorDataProcessor.buildCategoryOptions(vendor);
+                    return vendorMapper.toResponseDTO(vendor, categoryOptions);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public VendorResponseDTO updateVendor(Long id, VendorDTO vendorDTO) {
         if (!vendorRepository.existsById(id)) {
             throw new EntityNotFoundException("Vendor not found with id: " + id);
