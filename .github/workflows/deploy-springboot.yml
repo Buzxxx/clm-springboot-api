@@ -26,11 +26,18 @@ jobs:
 
       - name: Verify JAR File Before Copying
         run: |
+          echo "Checking JAR file before copying..."
           ls -lh build/libs/
-          file build/libs/*.jar || echo "No valid JAR file found!"
+          file build/libs/*.jar || echo "Error: No valid JAR file found!"
+          if [[ ! -f "$(ls build/libs/*.jar 2>/dev/null)" ]]; then
+            echo "Error: No JAR file found in build/libs/"
+            exit 1
+          fi
 
       - name: Set Versioned JAR Filename
-        run: echo "JAR_NAME=clm-api-$(date +%Y%m%d-%H%M%S).jar" >> $GITHUB_ENV
+        run: |
+          JAR_FILE=$(ls build/libs/*.jar | head -n 1 | xargs basename)
+          echo "JAR_NAME=$JAR_FILE" >> $GITHUB_ENV
 
       - name: Copy JAR to VM
         uses: appleboy/scp-action@v0.1.7
@@ -38,8 +45,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/*.jar"
-          target: "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
+          source: "build/libs/${{ env.JAR_NAME }}"
+          target: "/home/gnelson/projects/springboot-app/builds/libs/"
 
       - name: Verify JAR File on VM Before Restart
         uses: appleboy/ssh-action@v1.0.3
@@ -48,6 +55,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "Verifying JAR on VM..."
             ls -lh /home/gnelson/projects/springboot-app/builds/libs/
             file /home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}
 
@@ -66,20 +74,19 @@ jobs:
             JAR_PATH="/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
             SYMLINK_PATH="/home/gnelson/projects/springboot-app/builds/libs/clm-api.jar"
 
-            # Update Symlink
+            echo "Updating symlink..."
             ln -sf "$JAR_PATH" "$SYMLINK_PATH"
 
-            # Restart PM2
+            echo "Restarting application with PM2..."
             if pm2 list | grep -q clm-api; then
               pm2 restart clm-api
             else
               pm2 start "java -jar $SYMLINK_PATH --spring.profiles.active=prod" --name clm-api
             fi
 
-            # Save PM2 State
             pm2 save
 
-            # Remove old JARs (keep last 5)
+            echo "Cleaning up old JAR files..."
             ls -tp /home/gnelson/projects/springboot-app/builds/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
 
             echo "Spring Boot restarted successfully with PM2!"
