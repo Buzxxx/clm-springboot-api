@@ -42,9 +42,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            pm2 stop clm-api || true
-            pm2 delete clm-api || true
-            pm2 start "java -jar ~/app/clm-api.jar --spring.profiles.active=prod" --name clm-api
-            pm2 save
-            echo "Spring Boot restarted successfully with PM2 as 'clm-api'!"
+        script: |
+          pm2 list | grep clm-api && pm2 restart clm-api || pm2 start "java -jar ~/app/clm-api.jar --spring.profiles.active=prod" --name clm-api
+          pm2 save
+          echo "Spring Boot restarted successfully with PM2 as 'clm-api'!"
