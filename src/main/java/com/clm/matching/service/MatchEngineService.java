@@ -1,11 +1,12 @@
 package com.clm.matching.service;
 
-import com.clm.matching.models.VendorMatchResponseDTO;
+import com.clm.matching.models.VendorMatchOverviewResponseDTO;
 
 import java.util.List;
 import java.util.Map;
 
 public interface MatchEngineService {
 
-    Map<String, Object> getMatchResults(Map<Long, List<Long>> userSelections);
+    Map<String, Object> getMatchResults(Map<Long, List<Long>> userSelections, List<Long> vendorIds);
+    List<VendorMatchOverviewResponseDTO> getMatchOverview(Map<Long, List<Long>> userSelections);
 }

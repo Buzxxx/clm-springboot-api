@@ -1,0 +1,89 @@
+name: Deploy Spring Boot to Linux VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Build Spring Boot JAR
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      - name: Debug: Verify JAR File Before Copying
+        run: |
+          echo "Checking JAR file before copying..."
+          ls -lh build/libs/
+          file build/libs/*.jar || echo "Error: No valid JAR file found!"
+          JAR_FILE=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -n 1 | xargs basename)
+          if [[ -z "$JAR_FILE" ]]; then
+            echo "Error: No valid JAR file found!"
+            exit 1
+          fi
+          echo "JAR_NAME=$JAR_FILE" >> $GITHUB_ENV
+          echo "Using JAR: $JAR_FILE"
+
+      - name: Copy JAR to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "build/libs/${{ env.JAR_NAME }}"
+          target: "/home/gnelson/projects/springboot-app/builds/libs/"
+          strip_components: 1
+
+      - name: Verify JAR File on VM After Transfer
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Verifying JAR on VM..."
+            ls -lh /home/gnelson/projects/springboot-app/builds/libs/
+            if [[ ! -f "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}" ]]; then
+              echo "Error: JAR file not found on VM after SCP!"
+              exit 1
+            fi
+
+      - name: Update Symlink and Restart App on VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            JAR_PATH="/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
+            SYMLINK_PATH="/home/gnelson/projects/springboot-app/builds/libs/clm-api.jar"
+
+            echo "Updating symlink..."
+            ln -sf "$JAR_PATH" "$SYMLINK_PATH"
+
+            echo "Restarting application with PM2..."
+            if pm2 list | grep -q clm-api; then
+              pm2 restart clm-api
+            else
+              pm2 start "java -jar $SYMLINK_PATH --spring.profiles.active=prod" --name clm-api
+            fi
+
+            pm2 save
+
+            echo "Cleaning up old JAR files..."
+            ls -tp /home/gnelson/projects/springboot-app/builds/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
+
+            echo "Spring Boot restarted successfully with PM2!"

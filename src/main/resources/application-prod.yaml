@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://contract-lifecycle-management.postgres.database.azure.com:5432/contract_lifecycle_management_db
-    username: admin_user
-    password: letmeconnect1234@
+    url: jdbc:postgresql://localhost:5432/clm_db
+    username: clmuser
+    password: letmeconnect
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10 # Adjust this based on your needs
