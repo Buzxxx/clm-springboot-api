@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/${{ env.JAR_NAME }}"
-          target: "/home/gnelson/projects/springboot-app/builds/libs/"
+          target: "/home/gnelson/projects/springboot-app/"
 
       - name: Verify JAR File on VM After Transfer
         uses: appleboy/ssh-action@v1.0.3
