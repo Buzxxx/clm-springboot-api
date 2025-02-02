@@ -25,7 +25,9 @@ jobs:
           ./gradlew clean build -x test
 
       - name: Verify JAR File Before Copying
-        run: ls -lah build/libs/
+        run: |
+          ls -lh build/libs/
+          file build/libs/*.jar || echo "No valid JAR file found!"
 
       - name: Set Versioned JAR Filename
         run: echo "JAR_NAME=clm-api-$(date +%Y%m%d-%H%M%S).jar" >> $GITHUB_ENV
@@ -38,6 +40,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/*.jar"
           target: "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}"
+
+      - name: Verify JAR File on VM Before Restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            ls -lh /home/gnelson/projects/springboot-app/builds/libs/
+            file /home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}
+
+            if [[ ! -f "/home/gnelson/projects/springboot-app/builds/libs/${{ env.JAR_NAME }}" ]]; then
+              echo "Error: JAR file not found on VM!"
+              exit 1
+            fi
 
       - name: Update Symlink and Restart App on VM
         uses: appleboy/ssh-action@v1.0.3
