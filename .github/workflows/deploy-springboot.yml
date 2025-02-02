@@ -24,12 +24,15 @@ jobs:
           chmod +x gradlew
           ./gradlew clean build -x test
 
-      - name: Debug: Verify JAR File Before Copying
+      - name: Debug: Start Verification
+        run: echo "Starting debug process"
+
+      - name: Verify JAR File Before Copying
         run: |
           echo "Checking JAR file before copying..."
           ls -lh build/libs/
           file build/libs/*.jar || echo "Error: No valid JAR file found!"
-          JAR_FILE=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -n 1 | xargs basename)
+          JAR_FILE=$(ls build/libs/*.jar | grep -E 'SNAPSHOT|\.jar' | grep -v plain | head -n 1 | xargs basename || true)
           if [[ -z "$JAR_FILE" ]]; then
             echo "Error: No valid JAR file found!"
             exit 1
@@ -45,7 +48,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/${{ env.JAR_NAME }}"
           target: "/home/gnelson/projects/springboot-app/builds/libs/"
-          strip_components: 1
 
       - name: Verify JAR File on VM After Transfer
         uses: appleboy/ssh-action@v1.0.3
