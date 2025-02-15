@@ -22,7 +22,7 @@ jobs:
       - name: 🛠 Build Spring Boot JAR with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build -x test
+          ./gradlew clean build -x test --no-daemon
 
       - name: 🔍 Verify JAR File Before Copying
         run: |
@@ -52,7 +52,8 @@ jobs:
           fi
 
           if [ ! -f "Dockerfile" ]; then
-            echo "❌ Warning: Dockerfile missing!"
+              echo "❌ Error: Dockerfile missing! Build cannot proceed."
+              exit 1
           fi
 
           tar -czf springboot-build.tar.gz \
@@ -78,7 +79,7 @@ jobs:
           timeout: 300s
 
       - name: 🔄 Restart Spring Boot Service
-        uses: appleboy/ssh-action@v1.0.6
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.SSH_USER }}
@@ -101,7 +102,7 @@ jobs:
             echo "✅ Deployment complete!"
 
       - name: 🔍 Validate Deployment
-        uses: appleboy/ssh-action@v1.0.6
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.SSH_USER }}
