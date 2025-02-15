@@ -1,32 +1,15 @@
-# Stage 1: Build the project
-FROM amazoncorretto:21.0.4-alpine3.18 AS builder
+# Use Eclipse Temurin JDK 21 as base image
+FROM eclipse-temurin:21-jdk
 
-#Set Working directory in the container
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy Gradle wrapper and other necessary files
-COPY . .
+# Copy the JAR file from the deployment directory (Ensure it matches your deploy.yml)
+ARG JAR_NAME=app.jar
+COPY build/libs/${JAR_NAME} app.jar
 
-# Make gradlew executable
-RUN chmod +x ./gradlew
-
-# Build the JAR file using the Gradle wrapper
-RUN ./gradlew clean build
-
-# Stage 2: Run the application
-FROM amazoncorretto:21.0.4-alpine3.18
-
-WORKDIR /app
-
-# Copy the JAR file into the container
-COPY --from=builder app/build/libs/contract_lifecycle_management-0.0.1-SNAPSHOT.jar app.jar
-
-# Set environment variable for active Spring profile
-ENV SPRING_PROFILES_ACTIVE=prod
-
-# Expose the default Spring Boot port
+# Expose the application's default port (Change if necessary)
 EXPOSE 8080
 
-# Run the application
+# Run the application with optimizations
 CMD ["java", "-jar", "app.jar"]
-

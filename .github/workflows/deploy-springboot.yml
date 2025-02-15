@@ -1,90 +1,116 @@
-name: Deploy Spring Boot to Linux VM
+name: Deploy Spring Boot to VM
 
 on:
   push:
     branches:
-      - main
+      - main # Change if your branch name is different
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 🚀 Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: ⚙️ Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Build Spring Boot JAR
+      - name: 🛠 Build Spring Boot JAR with Gradle
         run: |
           chmod +x gradlew
           ./gradlew clean build -x test
 
-      - name: Verify JAR File Before Copying
+      - name: 🔍 Verify JAR File Before Copying
         run: |
           set -e
-          echo "Checking JAR file before copying..."
+          echo "Checking JAR file..."
           ls -lh build/libs/
+
+          # Find the JAR file
           JAR_FILE=$(ls build/libs/*.jar 2>/dev/null | grep -E 'SNAPSHOT|\.jar' | grep -v plain | head -n 1 | xargs basename || true)
+
           if [[ -z "$JAR_FILE" ]]; then
-            echo "Error: No valid JAR file found!"
+            echo "❌ Error: No valid JAR file found!"
             exit 1
           fi
-          file "build/libs/$JAR_FILE"
-          echo "JAR_NAME=$JAR_FILE" >> $GITHUB_ENV
-          echo "Using JAR: $JAR_FILE"
 
-      - name: Copy JAR to VM
+          file "build/libs/$JAR_FILE"
+          echo "✅ Using JAR: $JAR_FILE"
+          echo "JAR_NAME=$JAR_FILE" >> $GITHUB_ENV
+
+      - name: 📦 Archive Build Files
+        run: |
+          echo "📦 Packaging Spring Boot build..."
+
+          if [ ! -f "build/libs/${{ env.JAR_NAME }}" ]; then
+            echo "❌ Error: JAR file missing!"
+            exit 1
+          fi
+
+          if [ ! -f "Dockerfile" ]; then
+            echo "❌ Warning: Dockerfile missing!"
+          fi
+
+          tar -czf springboot-build.tar.gz \
+              build/libs/${{ env.JAR_NAME }} \
+              Dockerfile
+
+          if [ -f "springboot-build.tar.gz" ]; then
+            echo "✅ Archive created: springboot-build.tar.gz"
+            ls -lh springboot-build.tar.gz
+          else
+            echo "❌ Error: Archive creation failed!"
+            exit 1
+          fi
+
+      - name: 📂 Deploy Build Files to VM
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/${{ env.JAR_NAME }}"
-          target: "/home/gnelson/projects/springboot-app/build/libs/"
-          strip_components: 2
+          source: springboot-build.tar.gz
+          target: "/home/gnelson/deployments/clm-springboot-api"
+          timeout: 300s
 
-      - name: Verify JAR File on VM After Transfer
-        uses: appleboy/ssh-action@v1.0.3
+      - name: 🔄 Restart Spring Boot Service
+        uses: appleboy/ssh-action@v1.0.6
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Verifying JAR on VM..."
-            ls -lh /home/gnelson/projects/springboot-app/build/libs/
-            if [[ ! -f "/home/gnelson/projects/springboot-app/build/libs/${{ env.JAR_NAME }}" ]]; then
-              echo "Error: JAR file not found on VM after SCP!"
+            set -e
+
+            echo "🛠 Checking if Docker is running..."
+            systemctl is-active --quiet docker || (echo "❌ Docker is not running!" && exit 1)
+
+            echo "🛠 Switching to deployment directory..."
+            cd ~/deployments
+
+            echo "📦 Extracting new Spring Boot build..."
+            tar -xzf clm-springboot-api/springboot-build.tar.gz -C clm-springboot-api --overwrite
+
+            echo "🚀 Restarting Spring Boot container..."
+            docker-compose up -d --build --force-recreate --no-deps clm-springboot-api || (echo "❌ Docker Compose failed!" && exit 1)
+
+            echo "✅ Deployment complete!"
+
+      - name: 🔍 Validate Deployment
+        uses: appleboy/ssh-action@v1.0.6
+        with:
+          host: ${{ secrets.AZURE_VM_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🔍 Checking if Spring Boot is running..."
+            if docker ps --filter "name=clm-springboot-api" --format '{{.Names}}' | grep -q clm-springboot-api; then
+              echo "✅ Spring Boot is running successfully!"
+            else
+              echo "❌ Spring Boot failed to start!" >&2
               exit 1
             fi
-
-      - name: Update Symlink and Restart App on VM
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            JAR_PATH="/home/gnelson/projects/springboot-app/build/libs/${{ env.JAR_NAME }}"
-            SYMLINK_PATH="/home/gnelson/projects/springboot-app/build/libs/clm-api.jar"
-
-            echo "Updating symlink..."
-            ln -sf "$JAR_PATH" "$SYMLINK_PATH"
-
-            echo "Restarting application with PM2..."
-            if pm2 list | grep -q clm-api; then
-              pm2 restart clm-api
-            else
-              pm2 start "java -jar $SYMLINK_PATH --spring.profiles.active=prod" --name clm-api
-            fi
-
-            pm2 save
-
-            echo "Cleaning up old JAR files..."
-            ls -tp /home/gnelson/projects/springboot-app/build/libs/clm-api-*.jar | grep -v '^$' | tail -n +6 | xargs -I {} rm -- {}
-
-            echo "Spring Boot restarted successfully with PM2!"
