@@ -6,4 +6,5 @@ spring:
 
 # postgres=# CREATE USER clmuser WITH ENCRYPTED PASSWORD 'letmeconnect';
 #echo "listen_addresses = '0.0.0.0'" | sudo tee -a /etc/postgresql/14/main/postgresql.conf
-
+#deploy
+# test 2
