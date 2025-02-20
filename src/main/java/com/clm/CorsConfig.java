@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**") // Adjust based on your API structure
-                        .allowedOrigins("http://localhost:3000") // Allow Next.js frontend
+                        .allowedOrigins("*") // Allow both local and production
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
