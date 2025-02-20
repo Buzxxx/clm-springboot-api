@@ -14,10 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**") // Adjust based on your API structure
-                        .allowedOrigins("*") // Allow both local and production
+                        .allowedOriginPatterns("*") // Allow all origins dynamically
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true); // Supports cookies & authentication
             }
         };
     }
