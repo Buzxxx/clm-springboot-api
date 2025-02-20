@@ -6,6 +6,7 @@ import com.clm.category.service.CategoryService;
 import com.clm.vendor.models.Vendor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public class VendorDataProcessor {
                             category.getId(), List.of()
                     ).contains(option.getId()))
                     .toList();
+            category.setOptions(new HashSet<>(filteredOptions));
         });
         return categories;
         // Build category-options mapping
