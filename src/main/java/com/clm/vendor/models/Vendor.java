@@ -24,6 +24,7 @@ public class Vendor {
     private String name;
 
     private String description;
+    private String logo;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")

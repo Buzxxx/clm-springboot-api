@@ -13,5 +13,6 @@ public class VendorDTO {
     private Long id;
     private String name;
     private String description;
+    private String logo;
     private Map<Long, List<Long>> categoryOptions;
 }
