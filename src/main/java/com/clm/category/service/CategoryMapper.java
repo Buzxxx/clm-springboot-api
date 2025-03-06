@@ -22,6 +22,7 @@ public class CategoryMapper {
                 .id(category.getId())
                 .name(category.getName())
                 .description(category.getDescription())
+                .image(category.getImage())
                 .options(category.getOptions().stream()
                         .map(optionMapper::toDTO)
                         .collect(Collectors.toSet()))
