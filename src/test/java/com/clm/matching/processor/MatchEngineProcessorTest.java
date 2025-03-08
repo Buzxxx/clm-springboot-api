@@ -43,7 +43,7 @@ class MatchEngineProcessorTest {
         categoryList = List.of(category1, category2);
 
         // Vendor list (with categories)
-        VendorResponseDTO vendorA = new VendorResponseDTO(1L, "Vendor A", "Description A", List.of(category1, category2));
+        VendorResponseDTO vendorA = VendorResponseDTO.builder(). id(1L).name("Vendor A"). description("Description A").categoryOptions(List.of(category1, category2)).build();
         vendorList = List.of(vendorA);
     }
 
