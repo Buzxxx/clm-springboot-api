@@ -24,15 +24,14 @@ public class Vendor {
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
     private String software_name;
     private String description;
     private String website;
     private String logo;
     private Boolean is_verified;
-    private LocalDateTime supplier_commencement_date;
-    private LocalDateTime business_started_date;
+    private LocalDate supplier_commencement_date;
+    private LocalDate business_started_date;
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     Map<Long, List<Long>> categoryOptions;
