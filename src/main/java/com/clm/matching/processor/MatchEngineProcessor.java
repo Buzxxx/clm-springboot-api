@@ -26,10 +26,11 @@ public class MatchEngineProcessor {
                             .collect(Collectors.toSet());
 
                     return new CategoryDTO(
-                            category.getId(),
-                            category.getName(),
-                            category.getDescription(),
-                            filteredOptions
+                        category.getId(),
+                        category.getName(),
+                        category.getDescription(),
+                        category.getImage(), 
+                        filteredOptions
                     );
                 })
                 .collect(Collectors.toList());
