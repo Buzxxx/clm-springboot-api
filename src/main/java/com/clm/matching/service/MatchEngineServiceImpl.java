@@ -38,7 +38,7 @@ public class MatchEngineServiceImpl implements MatchEngineService{
                 .collect(Collectors.toMap(CategoryDTO::getId, Function.identity()));
 
         List<CategoryDTO> filteredCategories = matchEngineProcessor.prepareFilteredCategories(userSelections, categoryMap);
-        List<VendorDetailMatchResponseDTO> vendorResponses = matchEngineProcessor.prepareVendorResponses(userSelections, categoryMap, vendors);
+        List<VendorDetailMatchResponseDTO> vendorResponses = matchEngineProcessor.prepareVendorResponsesForMatchDetails(userSelections, categoryMap, vendors);
 
         Map<String, Object> response = new HashMap<>();
         response.put("categories", filteredCategories);

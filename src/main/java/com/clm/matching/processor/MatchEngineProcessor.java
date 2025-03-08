@@ -36,9 +36,9 @@ public class MatchEngineProcessor {
                 .collect(Collectors.toList());
     }
 
-    public List<VendorDetailMatchResponseDTO> prepareVendorResponses(Map<Long, List<Long>> userSelections,
-                                                                     Map<Long, CategoryDTO> categoryMap,
-                                                                     List<VendorResponseDTO> vendors) {
+    public List<VendorDetailMatchResponseDTO> prepareVendorResponsesForMatchDetails(Map<Long, List<Long>> userSelections,
+                                                                                    Map<Long, CategoryDTO> categoryMap,
+                                                                                    List<VendorResponseDTO> vendors) {
         return vendors.stream()
                 .map(vendor -> {
                     List<CategoryMatchResponseDTO> categoryMatches = prepareCategoryMatches(
@@ -46,7 +46,7 @@ public class MatchEngineProcessor {
                             vendor.getCategoryOptions()
                     );
 
-                    double vendorMatchPercentage = calculateVendorMatchPercentage(categoryMatches);
+                    int vendorMatchPercentage = calculateVendorMatchPercentage(vendor.getCategoryOptions(), userSelections);
 
                     return new VendorDetailMatchResponseDTO(
                             vendor.getId(),
@@ -79,59 +79,48 @@ public class MatchEngineProcessor {
                                 .filter(selectedOptionIds::contains)
                                 .collect(Collectors.toList());
 
-                        double matchPercentage = matchedOptions.isEmpty() ? 0.0
-                                : (matchedOptions.size() * 100.0 / selectedOptionIds.size());
-
+                        int matchPercentage = calculateMatchPercentage(matchedOptions.size(), selectedOptionIds.size());
                         return new CategoryMatchResponseDTO(categoryId, matchPercentage, matchedOptions);
                     } else {
                         // Vendor does not have this category, set matchPercentage to 0.0
-                        return new CategoryMatchResponseDTO(categoryId, 0.0, Collections.emptyList());
+                        return new CategoryMatchResponseDTO(categoryId, 0, Collections.emptyList());
                     }
                 })
                 .collect(Collectors.toList());
     }
 
-    public double calculateVendorMatchPercentage(List<CategoryMatchResponseDTO> categoryMatches) {
-        if (categoryMatches.isEmpty()) return 0.0;
-        double totalPercentage = categoryMatches.stream()
-                .mapToDouble(CategoryMatchResponseDTO::getMatchPercentage)
+    public int calculateVendorMatchPercentage(List<CategoryDTO> vendorCategories, Map<Long, List<Long>> userSelections) {
+        long matchedOptionCount = vendorCategories.stream()
+                .mapToLong(category -> category.getOptions().stream()
+                        .map(OptionDTO::getId)
+                        .filter(optionId -> userSelections.getOrDefault(category.getId(), Collections.emptyList())
+                                .contains(optionId))
+                        .count())
                 .sum();
-        return totalPercentage / categoryMatches.size();
+        long totalUserSelections = userSelections.values().stream()
+                .mapToLong(List::size)
+                .sum();
+
+        return calculateMatchPercentage(matchedOptionCount, totalUserSelections);
     }
 
     public List<VendorMatchOverviewResponseDTO> prepareMatchOverview(Map<Long, List<Long>> userSelections, List<VendorResponseDTO> vendors) {
         return vendors.stream()
-                .map(vendor -> {
-                    List<OptionMatchResponseDTO> allOptions = new ArrayList<>();
-                    int matchedOptionCount = 0;
-                    int totalUserSelectedOptions = userSelections.values().stream().mapToInt(List::size).sum();
-
-                    for (CategoryDTO category : vendor.getCategoryOptions()) {
-                        List<Long> selectedOptionIds = userSelections.getOrDefault(category.getId(), Collections.emptyList());
-
-                        List<OptionMatchResponseDTO> vendorOptions = category.getOptions().stream()
-                                .map(option -> new OptionMatchResponseDTO(
-                                        option.getId(),
-                                        option.getName(),
-                                        selectedOptionIds.contains(option.getId())
-                                )).toList();
-                        allOptions.addAll(vendorOptions);
-                        matchedOptionCount += vendorOptions.stream().filter(OptionMatchResponseDTO::isMatch).count();
-                    }
-
-                    double matchPercentage = totalUserSelectedOptions == 0 ? 0.0 : (matchedOptionCount * 100.0 / totalUserSelectedOptions);
-
-                    return new VendorMatchOverviewResponseDTO(
-                            vendor.getId(),
-                            vendor.getName(),
-                            vendor.getDescription(),
-                            matchPercentage,
-                            allOptions
-                    );
-                })
+                .map(vendor -> VendorMatchOverviewResponseDTO.builder()
+                        .id(vendor.getId())
+                        .name(vendor.getName())
+                        .is_verified(vendor.getIs_verified())
+                        .description(vendor.getDescription())
+                        .software_name(vendor.getSoftware_name())
+                        .business_started_date(vendor.getBusiness_started_date())
+                        .matchPercentage(calculateVendorMatchPercentage(vendor.getCategoryOptions(), userSelections))
+                        .build())
                 .sorted(Comparator.comparingDouble(VendorMatchOverviewResponseDTO::getMatchPercentage).reversed())
                 .toList();
     }
 
+    private int calculateMatchPercentage(long matchedCount, long totalCount) {
+        return totalCount == 0 ? 0 : (int) Math.round((matchedCount * 100.0) / totalCount);
+    }
 
 }

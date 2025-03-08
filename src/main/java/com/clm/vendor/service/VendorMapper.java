@@ -1,39 +1,34 @@
 package com.clm.vendor.service;
 
 import com.clm.category.models.CategoryDTO;
-import com.clm.category.models.OptionDTO;
+import com.clm.vendor.models.Vendor;
 import com.clm.vendor.models.VendorDTO;
 import com.clm.vendor.models.VendorResponseDTO;
-import com.clm.vendor.models.Vendor;
-import org.springframework.stereotype.Component;
-
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import java.util.List;
-import java.util.Map;
 
+@Mapper(componentModel = "spring")
+public interface VendorMapper {
 
+    @Mapping(target = "categoryOptions", ignore = true)
+    VendorResponseDTO toResponseDTO(Vendor vendor);
 
-@Component
-public class VendorMapper {
+    //Convert payload DTO to Entity (For API Input)
+    @Mapping(target = "id", ignore = true) //Ignoring ID because DB generated
+    @Mapping(target = "is_verified", ignore = true)
+    @Mapping(target = "supplier_commencement_date", ignore = true)
+    @Mapping(target = "business_started_date", ignore = true)
+    @Mapping(target = "created_ts", ignore = true)
+    @Mapping(target = "created_by", ignore = true)
+    @Mapping(target = "last_updated_ts", ignore = true)
+    @Mapping(target = "last_updated_by", ignore = true)
+     Vendor toEntity(VendorDTO dto);
 
-    public VendorResponseDTO toResponseDTO(Vendor vendor, List<CategoryDTO> categoryOptions) {
-        return VendorResponseDTO.builder()
-                .id(vendor.getId())
-                .name(vendor.getName())
-                .software_name(vendor.getSoftware_name())
-                .description(vendor.getDescription())
-                .website(vendor.getWebsite())
-                .logo(vendor.getLogo())
-                .is_verified(vendor.getIs_verified())
-                .categoryOptions(categoryOptions)
-                .build();
-    }
-
-    public Vendor toEntity(VendorDTO dto) {
-        Vendor vendor = new Vendor();
-        vendor.setName(dto.getName());
-        vendor.setDescription(dto.getDescription());
-        vendor.setCategoryOptions(dto.getCategoryOptions());
-        return vendor;
+    default VendorResponseDTO toResponseDTO(Vendor vendor, List<CategoryDTO> categoryOptions) {
+        VendorResponseDTO dto = toResponseDTO(vendor);
+        dto.setCategoryOptions(categoryOptions);
+        return dto;
     }
 
 }

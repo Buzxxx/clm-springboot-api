@@ -40,15 +40,5 @@ public class VendorDataProcessor {
             category.setOptions(new HashSet<>(filteredOptions));
         });
         return categories;
-        // Build category-options mapping
-//        return categories.stream()
-//                .collect(Collectors.toMap(
-//                        category -> category,
-//                        category -> category.getOptions().stream()
-//                                .filter(option -> vendorCategoryOptions.getOrDefault(
-//                                        category.getId(), List.of()
-//                                ).contains(option.getId()))
-//                                .collect(Collectors.toList())
-//                ));
     }
 }

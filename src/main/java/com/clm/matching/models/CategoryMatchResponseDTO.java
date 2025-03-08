@@ -13,6 +13,6 @@ import java.util.List;
 public class CategoryMatchResponseDTO {
 
     private Long categoryId;
-    private double matchPercentage;
+    private int matchPercentage;
     private List<Long> matchedOptions;
 }
