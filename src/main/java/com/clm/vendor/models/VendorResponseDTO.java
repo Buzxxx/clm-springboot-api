@@ -15,6 +15,9 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
+
+//This DTO is used for returning response back to the frontend.
 public class VendorResponseDTO {
 
     private Long id;
