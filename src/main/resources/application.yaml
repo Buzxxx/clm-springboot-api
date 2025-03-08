@@ -2,7 +2,7 @@ spring:
   application:
     name: contract-lifecycle-management
   profiles:
-    active: dev # Change to 'prod' for production
+    active: prod # Change to 'prod' for production
 # postgres=# CREATE USER clmuser WITH ENCRYPTED PASSWORD 'letmeconnect';
 #echo "listen_addresses = '0.0.0.0'" | sudo tee -a /etc/postgresql/14/main/postgresql.conf
 #deploy
