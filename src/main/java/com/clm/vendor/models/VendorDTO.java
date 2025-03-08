@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +18,11 @@ public class VendorDTO {
     private String website;
     private String logo;
     private Boolean is_verified;
-    private java.util.Date supplier_commencement_date;
-    private java.util.Date business_started_date;
-    private java.util.Date created_ts;
+    private LocalDateTime supplier_commencement_date;
+    private LocalDateTime business_started_date;
+    private LocalDateTime created_ts;
     private String created_by;
-    private java.util.Date last_updated_ts;
+    private LocalDateTime last_updated_ts;
     private String last_updated_by;
     private Map<Long, List<Long>> categoryOptions;
 }
