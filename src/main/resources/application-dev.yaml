@@ -16,6 +16,3 @@ spring:
 
 pagination:
   page-size: 20
-
-server:
-  port: 8081

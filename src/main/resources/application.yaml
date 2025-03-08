@@ -7,5 +7,3 @@ spring:
 #echo "listen_addresses = '0.0.0.0'" | sudo tee -a /etc/postgresql/14/main/postgresql.conf
 #deploy
 # test 2
-server:
-  port: 8081
