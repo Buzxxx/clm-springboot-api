@@ -46,7 +46,7 @@ public class MatchEngineProcessor {
                             vendor.getCategoryOptions()
                     );
 
-                    int vendorMatchPercentage = calculateVendorMatchPercentageForMatchDetails(categoryMatches, userSelections);
+                    int vendorMatchPercentage = calculateVendorMatchPercentage(vendor.getCategoryOptions(), userSelections);
 
                     return new VendorDetailMatchResponseDTO(
                             vendor.getId(),
@@ -79,9 +79,7 @@ public class MatchEngineProcessor {
                                 .filter(selectedOptionIds::contains)
                                 .collect(Collectors.toList());
 
-                        int matchPercentage = (int) Math.round(matchedOptions.isEmpty() ? 0.0
-                                : (matchedOptions.size() * 100.0 / selectedOptionIds.size()));
-
+                        int matchPercentage = calculateMatchPercentage(matchedOptions.size(), selectedOptionIds.size());
                         return new CategoryMatchResponseDTO(categoryId, matchPercentage, matchedOptions);
                     } else {
                         // Vendor does not have this category, set matchPercentage to 0.0
@@ -91,50 +89,35 @@ public class MatchEngineProcessor {
                 .collect(Collectors.toList());
     }
 
-    public int calculateVendorMatchPercentageForMatchDetails(List<CategoryMatchResponseDTO> categoryMatches, Map<Long, List<Long>> userSelections) {
-            int matchedOptionCount = 0;
-            int totalUserSelectedOptions = userSelections.values().stream().mapToInt(List::size).sum();
+    public int calculateVendorMatchPercentage(List<CategoryDTO> vendorCategories, Map<Long, List<Long>> userSelections) {
+        long matchedOptionCount = vendorCategories.stream()
+                .mapToLong(category -> category.getOptions().stream()
+                        .map(OptionDTO::getId)
+                        .filter(optionId -> userSelections.getOrDefault(category.getId(), Collections.emptyList())
+                                .contains(optionId))
+                        .count())
+                .sum();
+        long totalUserSelections = userSelections.values().stream()
+                .mapToLong(List::size)
+                .sum();
 
-            for (CategoryMatchResponseDTO categoryMatch: categoryMatches) {
-                matchedOptionCount += categoryMatch.getMatchedOptions().size();
-            }
-            return totalUserSelectedOptions == 0 ? 0:
-                    (int) Math.round(matchedOptionCount * 100.0 / totalUserSelectedOptions);
+        return calculateMatchPercentage(matchedOptionCount, totalUserSelections);
     }
 
     public List<VendorMatchOverviewResponseDTO> prepareMatchOverview(Map<Long, List<Long>> userSelections, List<VendorResponseDTO> vendors) {
         return vendors.stream()
-                .map(vendor -> {
-                    List<OptionMatchResponseDTO> allOptions = new ArrayList<>();
-                    int matchedOptionCount = 0;
-                    int totalUserSelectedOptions = userSelections.values().stream().mapToInt(List::size).sum();
-
-                    for (CategoryDTO category : vendor.getCategoryOptions()) {
-                        List<Long> selectedOptionIds = userSelections.getOrDefault(category.getId(), Collections.emptyList());
-
-                        List<OptionMatchResponseDTO> vendorOptions = category.getOptions().stream()
-                                .map(option -> new OptionMatchResponseDTO(
-                                        option.getId(),
-                                        option.getName(),
-                                        selectedOptionIds.contains(option.getId())
-                                )).toList();
-                        allOptions.addAll(vendorOptions);
-                        matchedOptionCount += vendorOptions.stream().filter(OptionMatchResponseDTO::isMatch).count();
-                    }
-
-                    int matchPercentage = (int) Math.round(totalUserSelectedOptions == 0 ? 0.0 : (matchedOptionCount * 100.0 / totalUserSelectedOptions));
-
-                    return new VendorMatchOverviewResponseDTO(
-                            vendor.getId(),
-                            vendor.getName(),
-                            vendor.getDescription(),
-                            matchPercentage,
-                            allOptions
-                    );
-                })
+                .map(vendor -> VendorMatchOverviewResponseDTO.builder()
+                        .id(vendor.getId())
+                        .name(vendor.getName())
+                        .description(vendor.getDescription())
+                        .matchPercentage(calculateVendorMatchPercentage(vendor.getCategoryOptions(), userSelections))
+                        .build())
                 .sorted(Comparator.comparingDouble(VendorMatchOverviewResponseDTO::getMatchPercentage).reversed())
                 .toList();
     }
 
+    private int calculateMatchPercentage(long matchedCount, long totalCount) {
+        return totalCount == 0 ? 0 : (int) Math.round((matchedCount * 100.0) / totalCount);
+    }
 
 }
