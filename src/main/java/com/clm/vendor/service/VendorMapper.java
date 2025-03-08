@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+
 @Component
 public class VendorMapper {
 
@@ -18,7 +19,11 @@ public class VendorMapper {
         return VendorResponseDTO.builder()
                 .id(vendor.getId())
                 .name(vendor.getName())
+                .software_name(vendor.getSoftware_name())
                 .description(vendor.getDescription())
+                .website(vendor.getWebsite())
+                .logo(vendor.getLogo())
+                .is_verified(vendor.getIs_verified())
                 .categoryOptions(categoryOptions)
                 .build();
     }

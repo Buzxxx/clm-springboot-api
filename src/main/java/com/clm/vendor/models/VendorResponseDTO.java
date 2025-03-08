@@ -14,7 +14,11 @@ public class VendorResponseDTO {
 
     private Long id;
     private String name;
+    private String software_name;
     private String description;
+    private String website;
+    private String logo;
+    private Boolean is_verified;
 
     private List<CategoryDTO> categoryOptions;
 }
