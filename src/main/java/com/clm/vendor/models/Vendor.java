@@ -4,10 +4,7 @@ import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.Map;
@@ -16,17 +13,26 @@ import java.util.Map;
 @Getter
 @Setter
 public class Vendor {
-
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
-
+    private String software_name;
     private String description;
-
+    private String website;
+    private String logo;
+    private Boolean is_verified;
+    @Temporal(TemporalType.DATE)
+    private java.util.Date supplier_commencement_date;
+    @Temporal(TemporalType.DATE)
+    private java.util.Date business_started_date;
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-//    @Convert(converter = VendorMapConverter.class)
     Map<Long, List<Long>> categoryOptions;
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date created_ts;
+    private String created_by;
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date last_updated_ts;
+    private String last_updated_by;
 }
