@@ -37,7 +37,6 @@ public class VendorDataProcessor {
                             category.getId(), List.of()
                     ).contains(option.getId()))
                     .toList();
-            System.out.println("Filtered Options: " + category.getId() + " :" + filteredOptions);
             category.setOptions(new HashSet<>(filteredOptions));
         });
         return categories;
