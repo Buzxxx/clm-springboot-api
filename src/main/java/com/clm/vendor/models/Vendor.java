@@ -24,12 +24,22 @@ public class Vendor {
     private Long id;
 
     private String name;
-
+    private String software_name;
     private String description;
+    private String website;
     private String logo;
-
+    private Boolean is_verified;
+    @Temporal(TemporalType.DATE)
+    private java.util.Date supplier_commencement_date;
+    @Temporal(TemporalType.DATE)
+    private java.util.Date business_started_date;
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-//    @Convert(converter = VendorMapConverter.class)
     Map<Long, List<Long>> categoryOptions;
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date created_ts;
+    private String created_by;
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date last_updated_ts;
+    private String last_updated_by;
 }
