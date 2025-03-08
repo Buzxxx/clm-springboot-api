@@ -14,6 +14,6 @@ public class VendorMatchOverviewResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private double matchPercentage;
+    private int matchPercentage;
     private List<OptionMatchResponseDTO> options;
 }
