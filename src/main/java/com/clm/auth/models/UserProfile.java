@@ -26,9 +26,6 @@ public class UserProfile {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private Integer age;
-
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
