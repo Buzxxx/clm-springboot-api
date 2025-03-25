@@ -1,5 +1,6 @@
 package com.clm.vendor.models;
 
+import com.clm.category.models.AppType;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,11 @@ public class Vendor {
     private Boolean is_verified;
     private LocalDate supplier_commencement_date;
     private LocalDate business_started_date;
+
+    @ManyToOne
+    @JoinColumn(name = "app_type_id")
+    private AppType appType;
+
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     Map<Long, List<Long>> categoryOptions;

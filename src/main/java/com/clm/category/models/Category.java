@@ -34,4 +34,12 @@ public class Category {
         options.remove(option);
         option.setCategory(null);
     }
+
+    @ManyToOne
+    @JoinColumn(name = "app_type_id")
+    private AppType appType;
+
+    @ManyToOne
+    @JoinColumn(name = "sub_type_id")
+    private SubType subType;
 }
