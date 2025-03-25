@@ -42,15 +42,12 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .userDetailsService(customUserDetailsService)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .formLogin(AbstractHttpConfigurer::disable);
 
         return http.build();
 
