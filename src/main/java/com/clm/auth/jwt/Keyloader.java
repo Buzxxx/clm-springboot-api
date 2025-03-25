@@ -19,29 +19,32 @@ public class Keyloader {
 
 
     public Keyloader() throws Exception {
-        this.privateKey = loadPrivateKey("keys/private_key.pem");
-        this.publicKey = loadPublicKey("keys/public_key.pem");
+//        this.privateKey = loadPrivateKey("keys/private_key.pem");
+//        this.publicKey = loadPublicKey("keys/public_key.pem");
+        this.privateKey = null;
+        this.publicKey = null;
     }
 
     private PublicKey loadPublicKey(String filePath) throws Exception{
-        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
-        String publicKeyPEM = new String(keyBytes).replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", "");
-        byte[] decoded = Base64.getDecoder().decode(publicKeyPEM);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
-        return KeyFactory.getInstance("RSA").generatePublic(spec);
-
+//        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
+//        String publicKeyPEM = new String(keyBytes).replace("-----BEGIN PUBLIC KEY-----", "")
+//                .replace("-----END PUBLIC KEY-----", "")
+//                .replaceAll("\\s", "");
+//        byte[] decoded = Base64.getDecoder().decode(publicKeyPEM);
+//        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
+//        return KeyFactory.getInstance("RSA").generatePublic(spec);
+            return null;
     }
 
     private PrivateKey loadPrivateKey(String filePath) throws Exception {
-        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
-        String privateKeyPEM = new String(keyBytes).replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
-        byte[] decoded = Base64.getDecoder().decode(privateKeyPEM);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
-        return KeyFactory.getInstance("RSA").generatePrivate(spec);
+//        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
+//        String privateKeyPEM = new String(keyBytes).replace("-----BEGIN PRIVATE KEY-----", "")
+//                .replace("-----END PRIVATE KEY-----", "")
+//                .replaceAll("\\s", "");
+//        byte[] decoded = Base64.getDecoder().decode(privateKeyPEM);
+//        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+//        return KeyFactory.getInstance("RSA").generatePrivate(spec);
+        return null;
     }
 
     public PrivateKey getPrivateKey() {
