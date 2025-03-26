@@ -5,6 +5,7 @@ import com.clm.category.models.AppTypeDTO;
 import com.clm.category.repository.AppTypeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +21,14 @@ public class AppTypeServiceImpl implements AppTypeService{
         this.appTypeMapper = appTypeMapper;
     }
 
+    @Transactional
     @Override
     public List<AppTypeDTO> getAllAppTypes() {
         List<AppType> appTypes = appTypeRepository.findAll();
         return appTypes.stream().map(appTypeMapper::toDTO).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public AppTypeDTO getAppTypeDetailsById(Long id) {
         AppType appType = appTypeRepository.findByIdWithSubTypesAndCategoriesAndOptions(id)
