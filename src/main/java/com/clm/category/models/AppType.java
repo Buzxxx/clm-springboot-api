@@ -1,14 +1,17 @@
 package com.clm.category.models;
 
 import com.clm.vendor.models.Vendor;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 
@@ -22,15 +25,15 @@ public class AppType {
     private String name;
 
     @OneToMany(mappedBy = "appType")
-    private List<SubType> subTypes = new ArrayList<>();
+    private Set<SubType> subTypes = new HashSet<>();
 
     // One AppType has many Vendors
     @OneToMany(mappedBy = "appType")
-    private List<Vendor> vendors = new ArrayList<>();
+    private Set<Vendor> vendors = new HashSet<>();
 
     // One AppType has many Categories
     @OneToMany(mappedBy = "appType")
-    private List<Category> categories = new ArrayList<>();
+    private Set<Category> categories = new HashSet<>();
 
 
 
