@@ -16,3 +16,7 @@ spring:
 
 pagination:
   page-size: 20
+
+rsa:
+  private-key-path: 'file:/home/gnelson/deployments/opts/secrets/private_key.pem'
+  public-key-path: 'file:/home/gnelson/deployments/opts/secrets/public_key.pem'
