@@ -23,6 +23,7 @@ public interface VendorMapper {
     @Mapping(target = "created_by", ignore = true)
     @Mapping(target = "last_updated_ts", ignore = true)
     @Mapping(target = "last_updated_by", ignore = true)
+    @Mapping(target = "appType", ignore = true)
      Vendor toEntity(VendorDTO dto);
 
     default VendorResponseDTO toResponseDTO(Vendor vendor, List<CategoryDTO> categoryOptions) {

@@ -1,13 +1,13 @@
 package com.clm.auth.models;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "app_user")
@@ -27,11 +27,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private List<Role> roles = new ArrayList<>();
+    private Role role;
 
     private boolean enabled = true;
     private boolean locked = false;
