@@ -91,4 +91,15 @@ public class JwtUtil {
         }
         return null;
     }
+
+    public String extractAccessToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7); // Remove "Bearer " prefix
+        }
+
+        return null; //No token found
+    }
+
 }
