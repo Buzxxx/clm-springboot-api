@@ -1,9 +1,14 @@
 package com.clm.auth.jwt;
 
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -12,19 +17,26 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 @Component
+@Getter
 public class Keyloader {
 
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
+    public Keyloader(@Value("${rsa.private-key-path}") String privateKeyPath,
+                     @Value("${rsa.public-key-path}") String publicKeyPath) throws Exception {
+//        this.privateKey = loadPrivateKey("keys/private_key.pem");
+//        this.publicKey = loadPublicKey("keys/public_key.pem");
 
-    public Keyloader() throws Exception {
-        this.privateKey = loadPrivateKey("keys/private_key.pem");
-        this.publicKey = loadPublicKey("keys/public_key.pem");
+        System.out.println("Private key path: " + privateKeyPath);
+        System.out.println("Public key path: " + publicKeyPath);
+
+        this.privateKey = loadPrivateKey(privateKeyPath);
+        this.publicKey = loadPublicKey(publicKeyPath);
     }
 
-    private PublicKey loadPublicKey(String filePath) throws Exception{
-        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
+    private PublicKey loadPublicKey(String path) throws Exception{
+        byte[] keyBytes = getBytes(path);
         String publicKeyPEM = new String(keyBytes).replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");
@@ -34,8 +46,8 @@ public class Keyloader {
 
     }
 
-    private PrivateKey loadPrivateKey(String filePath) throws Exception {
-        byte[] keyBytes = Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath());
+    private PrivateKey loadPrivateKey(String path) throws Exception {
+        byte[] keyBytes = getBytes(path);
         String privateKeyPEM = new String(keyBytes).replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
@@ -44,11 +56,9 @@ public class Keyloader {
         return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
-    public PrivateKey getPrivateKey() {
-        return privateKey;
+    private static byte[] getBytes(String path) throws IOException {
+        String filePath = path.substring("file:".length());
+        return Files.readAllBytes(Path.of(filePath));
     }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
-    }
 }
