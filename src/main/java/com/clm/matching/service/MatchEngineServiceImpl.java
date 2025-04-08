@@ -48,8 +48,8 @@ public class MatchEngineServiceImpl implements MatchEngineService{
     }
 
     @Override
-    public List<VendorMatchOverviewResponseDTO> getMatchOverview(Map<Long, List<Long>> userSelections) {
-        List<VendorResponseDTO> vendors = vendorService.getAllVendors();
+    public List<VendorMatchOverviewResponseDTO> getMatchOverview(Long appType,Map<Long, List<Long>> userSelections) {
+        List<VendorResponseDTO> vendors = vendorService.getAllVendors(appType);
         return matchEngineProcessor.prepareMatchOverview(userSelections, vendors);
     }
 

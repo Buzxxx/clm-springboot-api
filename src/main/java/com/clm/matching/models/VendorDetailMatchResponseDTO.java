@@ -15,6 +15,7 @@ public class VendorDetailMatchResponseDTO {
 
     private Long id;
     private String name;
+    private String logo;
     private String description;
     private int matchPercentage;
     List<CategoryMatchResponseDTO> categoryMatches;

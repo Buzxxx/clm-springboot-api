@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/clm_db
-    username: user
-    password: pass
+    url: jdbc:postgresql://localhost:5432/clm_db
+    username: postgres
+    password: letmeconnect
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20 # Adjust this based on your needs
@@ -16,7 +16,6 @@ spring:
 
 pagination:
   page-size: 20
-
-#rsa:
-#  private-key-path: 'file:D:/Spring_Projects/clm/private_key.pem'
-#  public-key-path: 'file:D:/Spring_Projects/clm/public_key.pem'
+rsa:
+  private-key-path: 'file:E:/code/secrets/private_key.pem'
+  public-key-path: 'file:E:/code/secrets/public_key.pem'
