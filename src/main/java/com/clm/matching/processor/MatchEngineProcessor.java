@@ -51,6 +51,7 @@ public class MatchEngineProcessor {
                     return new VendorDetailMatchResponseDTO(
                             vendor.getId(),
                             vendor.getName(),
+                            vendor.getLogo(),
                             vendor.getDescription(),
                             vendorMatchPercentage,
                             categoryMatches
@@ -111,6 +112,7 @@ public class MatchEngineProcessor {
                         .name(vendor.getName())
                         .is_verified(vendor.getIs_verified())
                         .description(vendor.getDescription())
+                        .logo(vendor.getLogo())
                         .software_name(vendor.getSoftware_name())
                         .business_started_date(vendor.getBusiness_started_date())
                         .matchPercentage(calculateVendorMatchPercentage(vendor.getCategoryOptions(), userSelections))

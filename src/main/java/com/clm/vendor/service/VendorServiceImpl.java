@@ -53,12 +53,25 @@ public class VendorServiceImpl implements VendorService{
 
         return vendors.stream()
                 .map(vendor -> {
-                    List<CategoryDTO> categoryOptions =
-                            vendorDataProcessor.buildCategoryOptions(vendor);
+                    List<CategoryDTO> categoryOptions = vendorDataProcessor.buildCategoryOptions(vendor);
                     return vendorMapper.toResponseDTO(vendor, categoryOptions);
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<VendorResponseDTO> getAllVendors(Long appTypeId) {
+        List<Vendor> vendors = vendorRepository.findByAppTypeId(appTypeId);
+
+        return vendors.stream()
+                .map(vendor -> {
+                    List<CategoryDTO> categoryOptions = vendorDataProcessor.buildCategoryOptions(vendor);
+                    return vendorMapper.toResponseDTO(vendor, categoryOptions);
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     @Override
     public List<VendorResponseDTO> getVendorByIds(List<Long> ids) {

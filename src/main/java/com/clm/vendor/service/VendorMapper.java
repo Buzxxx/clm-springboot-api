@@ -19,6 +19,7 @@ public interface VendorMapper {
     @Mapping(target = "is_verified", ignore = true)
     @Mapping(target = "supplier_commencement_date", ignore = true)
     @Mapping(target = "business_started_date", ignore = true)
+    @Mapping(target = "logo", ignore = true)
     @Mapping(target = "created_ts", ignore = true)
     @Mapping(target = "created_by", ignore = true)
     @Mapping(target = "last_updated_ts", ignore = true)

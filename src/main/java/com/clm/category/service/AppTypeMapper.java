@@ -22,6 +22,8 @@ public class AppTypeMapper {
                 .builder()
                 .id(appType.getId())
                 .name(appType.getName())
+                .description(appType.getDescription())
+                .image(appType.getImage())
                 .build();
     }
 
@@ -29,6 +31,8 @@ public class AppTypeMapper {
         return new AppTypeDTO(
                 appType.getId(),
                 appType.getName(),
+                appType.getDescription(),
+                appType.getImage(),
                 appType.getSubTypes().stream()
                         .map(this::mapSubType)
                         .collect(Collectors.toList())

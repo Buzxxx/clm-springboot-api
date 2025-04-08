@@ -24,6 +24,7 @@ public class SubType {
 
     // One SubType has many Categories
     @OneToMany(mappedBy = "subType")
+    @OrderBy("id ASC")
     private Set<Category> categories = new HashSet<>();
 
     private LocalDateTime created_ts;

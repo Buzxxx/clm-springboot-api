@@ -30,7 +30,7 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Transactional(readOnly = true)
     public List<OptionDTO> findAll() {
-        return optionRepository.findAll().stream()
+        return optionRepository.findAllByOrderByNameAsc().stream()
                 .map(optionMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -46,7 +46,7 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Transactional(readOnly = true)
     public List<OptionDTO> findByCategoryId(Long categoryId) {
-        return optionRepository.findByCategoryId(categoryId).stream()
+        return optionRepository.findByCategoryIdOrderByNameAsc(categoryId).stream()
                 .map(optionMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -104,5 +104,4 @@ public class OptionServiceImpl implements OptionService {
         option = optionRepository.save(option);
         return optionMapper.toDTO(option);
     }
-
 }
