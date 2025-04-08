@@ -9,5 +9,7 @@ public class AppTypeDTO {
 
     private Long id;
     private String name;
+    private String description;
+    private String image;
     private List<SubTypeDTO> subTypes;
 }

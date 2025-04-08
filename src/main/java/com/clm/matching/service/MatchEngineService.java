@@ -8,5 +8,5 @@ import java.util.Map;
 public interface MatchEngineService {
 
     Map<String, Object> getMatchResults(Map<Long, List<Long>> userSelections, List<Long> vendorIds);
-    List<VendorMatchOverviewResponseDTO> getMatchOverview(Map<Long, List<Long>> userSelections);
+    List<VendorMatchOverviewResponseDTO> getMatchOverview(Long apptype,Map<Long, List<Long>> userSelections);
 }

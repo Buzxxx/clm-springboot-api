@@ -13,9 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/appTypes")
 public class AppTypeController {
-
     private final AppTypeService appTypeService;
-
     public AppTypeController(AppTypeService appTypeService) {
         this.appTypeService = appTypeService;
     }
@@ -25,7 +23,7 @@ public class AppTypeController {
         return ResponseEntity.ok(appTypeService.getAllAppTypes());
     }
 
-    @GetMapping("/{id}/details")
+    @GetMapping("/{id}")
     public ResponseEntity<AppTypeDTO> getAppDetailsById(@PathVariable Long id) {
         return ResponseEntity.ok(appTypeService.getAppTypeDetailsById(id));
     }

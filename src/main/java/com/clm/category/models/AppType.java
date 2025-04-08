@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.OrderBy;
+
 @Entity
 
 @Getter @Setter @NoArgsConstructor
@@ -23,12 +25,16 @@ public class AppType {
     private Long id;
 
     private String name;
+    private String description;
+    private String image;
 
     @OneToMany(mappedBy = "appType")
+    @OrderBy("id ASC")
     private Set<SubType> subTypes = new HashSet<>();
 
     // One AppType has many Vendors
     @OneToMany(mappedBy = "appType")
+    @OrderBy("id ASC")
     private Set<Vendor> vendors = new HashSet<>();
 
     // One AppType has many Categories

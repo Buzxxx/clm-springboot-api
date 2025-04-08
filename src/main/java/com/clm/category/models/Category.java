@@ -23,6 +23,7 @@ public class Category {
     private String image;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("id ASC")
     private Set<Option> options = new HashSet<>();
 
     public void addOption(Option option) {
