@@ -2,7 +2,9 @@ package com.clm.auth.service;
 
 import com.clm.auth.jwt.JwtUtil;
 import com.clm.auth.models.*;
+import com.clm.auth.repository.UserProfileRepository;
 import com.clm.auth.repository.UserRepository;
+import com.clm.shared.exception.DuplicateFieldException;
 import io.jsonwebtoken.JwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.Cookie;
@@ -24,17 +26,31 @@ public class AuthServiceImpl implements AuthService{
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserProfileService userProfileService;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserRepository userRepository, UserProfileRepository userProfileRepository, BCryptPasswordEncoder passwordEncoder, UserProfileService userProfileService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userProfileService = userProfileService;
     }
 
     @Override
-    public void registerUser(RegisterRequestDTO request) {
+    public UserResponseDTO registerUser(RegisterRequestDTO request) {
+        // Validate email
+        if (userProfileRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateFieldException("Email already in use");
+        }
+
+        // Validate mobile
+        if (userProfileRepository.existsByMobile(request.getMobile())) {
+            throw new DuplicateFieldException("Mobile number already in use");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         if(StringUtils.isBlank(request.getUsername())) {
@@ -52,6 +68,7 @@ public class AuthServiceImpl implements AuthService{
 
         user.setUserProfile(profile);
         userRepository.save(user);
+        return userProfileService.getUserProfileByUsername(user.getUsername());
     }
 
     @Override
