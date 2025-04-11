@@ -12,4 +12,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
     @Query("SELECT p FROM UserProfile p WHERE p.user.username = :username")
     Optional<UserProfile> findUserProfileByUsername(String username);
+
+    boolean existsByEmail(String email);
+    boolean existsByMobile(String mobile);
 }
