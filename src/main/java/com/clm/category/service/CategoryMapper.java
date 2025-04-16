@@ -1,7 +1,9 @@
 package com.clm.category.service;
 
+import com.clm.category.models.AppType;
 import com.clm.category.models.CategoryDTO;
 import com.clm.category.models.Category;
+import com.clm.category.models.SubType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,11 +37,16 @@ public class CategoryMapper {
                 .collect(Collectors.toList());
     }
 
-    public Category toEntity(CategoryDTO dto) {
-        Category category = new Category();
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
-        return category;
+    public Category toEntity(AppType appType, SubType subType, CategoryDTO dto, String username) {
+        return Category.builder()
+                .name(dto.getName())
+                .image(dto.getImage())
+                .description(dto.getDescription())
+                .subType(subType)
+                .appType(appType)
+                .created_by(username)
+                .last_updated_by(username)
+                .build();
     }
 
     public void updateEntityFromDTO(CategoryDTO dto, Category category) {

@@ -27,13 +27,13 @@ public class OptionController {
         return ResponseEntity.ok(optionService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<OptionDTO> createOption(@RequestBody OptionDTO optionDTO) {
-        OptionDTO created = optionService.create(optionDTO);
-        return ResponseEntity
-                .created(URI.create("/api/v1/options" + created.getId()))
-                .body(created);
-    }
+//    @PostMapping
+//    public ResponseEntity<OptionDTO> createOption(@RequestBody OptionDTO optionDTO) {
+//        OptionDTO created = optionService.create(optionDTO);
+//        return ResponseEntity
+//                .created(URI.create("/api/v1/options" + created.getId()))
+//                .body(created);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<OptionDTO> updateOption(@PathVariable Long id, @RequestBody OptionDTO optionDTO) {

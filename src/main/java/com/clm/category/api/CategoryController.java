@@ -28,13 +28,13 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO created = categoryService.create(categoryDTO);
-        return ResponseEntity
-                .created(URI.create("/api/v1/categories/" + created.getId()))
-                .body(created);
-    }
+//    @PostMapping
+//    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+//        CategoryDTO created = categoryService.create(categoryDTO);
+//        return ResponseEntity
+//                .created(URI.create("/api/v1/categories/" + created.getId()))
+//                .body(created);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
