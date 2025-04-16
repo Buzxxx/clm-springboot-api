@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,19 +52,19 @@ public class OptionServiceImpl implements OptionService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public OptionDTO create(OptionDTO optionDTO) {
-        Option option = optionMapper.toEntity(optionDTO);
-
-        if (optionDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(optionDTO.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
-            option.setCategory(category);
-        }
-
-        option = optionRepository.save(option);
-        return optionMapper.toDTO(option);
-    }
+////    @Override
+////    public OptionDTO create(OptionDTO optionDTO) {
+////        Option option = optionMapper.toEntity(optionDTO);
+////
+////        if (optionDTO.getCategoryId() != null) {
+////            Category category = categoryRepository.findById(optionDTO.getCategoryId())
+////                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
+////            option.setCategory(category);
+////        }
+//
+//        option = optionRepository.save(option);
+//        return optionMapper.toDTO(option);
+//    }
 
     @Override
     public OptionDTO update(Long id, OptionDTO optionDTO) {
@@ -103,5 +104,13 @@ public class OptionServiceImpl implements OptionService {
         option.setCategory(newCategory);
         option = optionRepository.save(option);
         return optionMapper.toDTO(option);
+    }
+
+    @Override
+    public Set<Option> prepareOptions(Category category, Set<OptionDTO> optionDTOS, String username) {
+        return optionDTOS.stream()
+                .map(optionDTO -> {
+                    return optionMapper.toEntity(optionDTO, category, username);
+                }).collect(Collectors.toSet());
     }
 }

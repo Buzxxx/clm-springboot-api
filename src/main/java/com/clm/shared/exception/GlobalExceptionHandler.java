@@ -1,11 +1,15 @@
 package com.clm.shared.exception;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,6 +47,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied");
     }
 
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJwtInvalidException(JwtException ex) {
+        logger.warn("403 Forbidden - Token Invalid: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Token Invalid");
+    }
+
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
         return ResponseEntity
                 .status(status)
@@ -62,4 +72,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
+
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Data integrity violation: " + ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Validation failed: " + ex.getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<Map<String, String>> handleTransactionException(TransactionSystemException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Transaction error: " + ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+
 }

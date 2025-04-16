@@ -1,8 +1,6 @@
 package com.clm.category.service;
 
-import com.clm.category.models.CategoryDTO;
-import com.clm.category.models.Category;
-import com.clm.category.models.Option;
+import com.clm.category.models.*;
 import com.clm.category.repository.CategoryRepository;
 import com.clm.category.repository.OptionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -18,13 +17,15 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final OptionRepository optionRepository;
     private final CategoryMapper categoryMapper;
+    private final OptionService optionService;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository,
                                OptionRepository optionRepository,
-                               CategoryMapper categoryMapper) {
+                               CategoryMapper categoryMapper, OptionService optionService) {
         this.categoryRepository = categoryRepository;
         this.optionRepository = optionRepository;
         this.categoryMapper = categoryMapper;
+        this.optionService = optionService;
     }
 
     @Override
@@ -48,12 +49,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toDTOList(categories);
     }
 
-    @Override
-    public CategoryDTO create(CategoryDTO categoryDTO) {
-        Category category = categoryMapper.toEntity(categoryDTO);
-        category = categoryRepository.save(category);
-        return categoryMapper.toDTO(category);
-    }
+//    @Override
+//    public CategoryDTO create(CategoryDTO categoryDTO) {
+//        Category category = categoryMapper.toEntity(categoryDTO);
+//        category = categoryRepository.save(category);
+//        return categoryMapper.toDTO(category);
+//    }
 
     @Override
     public CategoryDTO update(Long id, CategoryDTO categoryDTO) {
@@ -97,6 +98,16 @@ public class CategoryServiceImpl implements CategoryService {
         category.removeOption(option);
         category = categoryRepository.save(category);
         return categoryMapper.toDTO(category);
+    }
+
+    @Override
+    public Set<Category> prepareCategories(AppType appType, SubType subType, String username, Set<CategoryDTO> categoryDTOS) {
+        return categoryDTOS.stream()
+                .map(categoryDTO -> {
+                    Category category = categoryMapper.toEntity(appType, subType, categoryDTO, username);
+                    category.setOptions(optionService.prepareOptions(category, categoryDTO.getOptions(), username));
+                    return category;
+                }).collect(Collectors.toSet());
     }
 }
 
