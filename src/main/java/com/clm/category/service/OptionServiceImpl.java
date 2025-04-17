@@ -9,7 +9,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,38 +53,38 @@ public class OptionServiceImpl implements OptionService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public OptionDTO create(OptionDTO optionDTO) {
-        Option option = optionMapper.toEntity(optionDTO);
+////    @Override
+////    public OptionDTO create(OptionDTO optionDTO) {
+////        Option option = optionMapper.toEntity(optionDTO);
+////
+////        if (optionDTO.getCategoryId() != null) {
+////            Category category = categoryRepository.findById(optionDTO.getCategoryId())
+////                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
+////            option.setCategory(category);
+////        }
+//
+//        option = optionRepository.save(option);
+//        return optionMapper.toDTO(option);
+//    }
 
-        if (optionDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(optionDTO.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
-            option.setCategory(category);
-        }
-
-        option = optionRepository.save(option);
-        return optionMapper.toDTO(option);
-    }
-
-    @Override
-    public OptionDTO update(Long id, OptionDTO optionDTO) {
-        Option option = optionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Option not found with id: " + id));
-
-        optionMapper.updateEntityFromDTO(optionDTO, option);
-
-        if (optionDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(optionDTO.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
-            option.setCategory(category);
-        } else {
-            option.setCategory(null);
-        }
-
-        option = optionRepository.save(option);
-        return optionMapper.toDTO(option);
-    }
+//    @Override
+//    public OptionDTO update(Long id, OptionDTO optionDTO) {
+//        Option option = optionRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Option not found with id: " + id));
+//
+//        optionMapper.updateEntityFromDTO(optionDTO, option);
+//
+//        if (optionDTO.getCategoryId() != null) {
+//            Category category = categoryRepository.findById(optionDTO.getCategoryId())
+//                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + optionDTO.getCategoryId()));
+//            option.setCategory(category);
+//        } else {
+//            option.setCategory(null);
+//        }
+//
+//        option = optionRepository.save(option);
+//        return optionMapper.toDTO(option);
+//    }
 
     @Override
     public void delete(Long id) {
@@ -103,5 +105,29 @@ public class OptionServiceImpl implements OptionService {
         option.setCategory(newCategory);
         option = optionRepository.save(option);
         return optionMapper.toDTO(option);
+    }
+
+    @Override
+    public Set<Option> prepareOptions(Category category, Set<OptionDTO> optionDTOS, String username) {
+        return optionDTOS.stream()
+                .map(optionDTO -> {
+                    return optionMapper.toEntity(optionDTO, category, username);
+                }).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<Option> prepareOptionsForUpdate(Category category, Set<OptionDTO> optionDTOS, String username) {
+        Set<Option> optionSet = new HashSet<>();
+        for(OptionDTO optionDTO:optionDTOS) {
+           Long id = optionDTO.getId();
+           if(id == null)
+               throw new IllegalArgumentException("Option id cannot be null");
+            Option option = optionRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Option not found with id: " + id));
+
+            optionMapper.updateEntityFromDTO(optionDTO, option, category, username);
+            optionSet.add(option);
+        }
+        return optionSet;
     }
 }

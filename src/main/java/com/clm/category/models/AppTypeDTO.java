@@ -1,8 +1,11 @@
 package com.clm.category.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class AppTypeDTO {
@@ -11,5 +14,5 @@ public class AppTypeDTO {
     private String name;
     private String description;
     private String image;
-    private List<SubTypeDTO> subTypes;
+    private Set<SubTypeDTO> subTypes;
 }

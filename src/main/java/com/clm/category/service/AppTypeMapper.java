@@ -6,15 +6,16 @@ import com.clm.category.models.SubType;
 import com.clm.category.models.SubTypeDTO;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class AppTypeMapper {
 
-    private final CategoryMapper categoryMapper;
+    private final SubTypeMapper subTypeMapper;
 
-    public AppTypeMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
+    public AppTypeMapper(SubTypeMapper subTypeMapper) {
+        this.subTypeMapper = subTypeMapper;
     }
 
     public AppTypeDTO toDTO(AppType appType) {
@@ -34,18 +35,26 @@ public class AppTypeMapper {
                 appType.getDescription(),
                 appType.getImage(),
                 appType.getSubTypes().stream()
-                        .map(this::mapSubType)
-                        .collect(Collectors.toList())
+                        .map(subTypeMapper::mapSubType)
+                        .collect(Collectors.toSet())
         );
     }
 
-    public SubTypeDTO mapSubType(SubType subType) {
-        return new SubTypeDTO(
-                subType.getId(),
-                subType.getName(),
-                subType.getCategories().stream()
-                        .map(categoryMapper::toDTO)
-                        .collect(Collectors.toList())
-        );
+    public AppType toEntity(AppTypeDTO appTypeDTO, String username) {
+
+        return AppType.builder()
+                .name(appTypeDTO.getName())
+                .description(appTypeDTO.getDescription())
+                .image(appTypeDTO.getImage())
+                .created_by(username)
+                .last_updated_by(username)
+                .build();
     }
+
+    public void updateEntityFromDTO(AppTypeDTO appTypeDTO, AppType appType) {
+        appType.setName(appTypeDTO.getName());
+        appType.setDescription(appTypeDTO.getDescription());
+        appType.setImage(appTypeDTO.getImage());
+    }
+
 }

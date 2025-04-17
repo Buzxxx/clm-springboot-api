@@ -4,6 +4,7 @@ import com.clm.auth.jwt.JwtUtil;
 import com.clm.auth.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -43,6 +44,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/auth/me").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/appTypes").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/appTypes").authenticated()
                         .anyRequest().permitAll()
                 )
                 .userDetailsService(customUserDetailsService)

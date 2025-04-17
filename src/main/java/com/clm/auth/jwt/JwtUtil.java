@@ -20,7 +20,7 @@ public class JwtUtil {
     private final PublicKey publicKey;
     private final PrivateKey privateKey;
 
-    private static final long EXPIRATION_TIME_ACCESS = 3 * 60; // 15 minutes (in seconds)
+    private static final long EXPIRATION_TIME_ACCESS = 15 * 60; // 15 minutes (in seconds)
     private static final long EXPIRATION_TIME_REFRESH = 7 * 24 * 60 * 60; // 7 days (in seconds)
 
     public JwtUtil(Keyloader keyloader) {
