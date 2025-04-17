@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/auth/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/appTypes").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/appTypes").authenticated()
                         .anyRequest().permitAll()
                 )
                 .userDetailsService(customUserDetailsService)

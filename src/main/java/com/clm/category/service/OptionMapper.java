@@ -23,7 +23,10 @@ public class OptionMapper {
                 .build();
     }
 
-    public void updateEntityFromDTO(OptionDTO optionDTO, Option option) {
+    public void updateEntityFromDTO(OptionDTO optionDTO, Option option, Category category, String username)
+    {
         option.setName(optionDTO.getName());
+        option.setCategory(category);
+        option.setLast_updated_by(username);
     }
 }

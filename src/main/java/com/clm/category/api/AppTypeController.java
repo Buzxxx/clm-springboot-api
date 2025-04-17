@@ -37,4 +37,11 @@ public class AppTypeController {
         appTypeService.createAppType(appTypeDTO, username);
         return ResponseEntity.status(HttpStatus.CREATED).body("App and Downstream Objects Created Successfully");
     }
+
+    @PutMapping
+    public ResponseEntity<?> updateAppType(@RequestBody AppTypeDTO appTypeDTO, HttpServletRequest request) {
+        String username = authService.retrieveUsernameFromHeader(request);
+        appTypeService.updateAppType(appTypeDTO, username);
+        return ResponseEntity.status(HttpStatus.OK).body("App and downstream objects updated successfully");
+    }
 }

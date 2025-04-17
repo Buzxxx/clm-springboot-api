@@ -35,10 +35,10 @@ public class OptionController {
 //                .body(created);
 //    }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<OptionDTO> updateOption(@PathVariable Long id, @RequestBody OptionDTO optionDTO) {
-        return ResponseEntity.ok(optionService.update(id, optionDTO));
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<OptionDTO> updateOption(@PathVariable Long id, @RequestBody OptionDTO optionDTO) {
+//        return ResponseEntity.ok(optionService.update(id, optionDTO));
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOption(@PathVariable Long id) {
