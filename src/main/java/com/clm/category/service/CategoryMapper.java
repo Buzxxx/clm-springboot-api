@@ -52,5 +52,6 @@ public class CategoryMapper {
     public void updateEntityFromDTO(CategoryDTO dto, Category category) {
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
+        category.setImage(dto.getImage());
     }
 }

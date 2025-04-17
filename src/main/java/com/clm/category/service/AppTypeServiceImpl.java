@@ -1,6 +1,8 @@
 package com.clm.category.service;
 
-import com.clm.category.models.*;
+import com.clm.category.models.AppType;
+import com.clm.category.models.AppTypeDTO;
+import com.clm.category.models.SubType;
 import com.clm.category.repository.AppTypeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ public class AppTypeServiceImpl implements AppTypeService{
     private final AppTypeRepository appTypeRepository;
     private final AppTypeMapper appTypeMapper;
     private final CategoryService categoryService;
+    private final SubTypeService subTypeService;
 
-    public AppTypeServiceImpl(AppTypeRepository appTypeRepository, AppTypeMapper appTypeMapper, CategoryService categoryService) {
+    public AppTypeServiceImpl(AppTypeRepository appTypeRepository, AppTypeMapper appTypeMapper, CategoryService categoryService, SubTypeService subTypeService) {
         this.appTypeRepository = appTypeRepository;
         this.appTypeMapper = appTypeMapper;
         this.categoryService = categoryService;
+        this.subTypeService = subTypeService;
     }
 
     @Transactional
@@ -42,21 +46,22 @@ public class AppTypeServiceImpl implements AppTypeService{
     @Transactional
     public void createAppType(AppTypeDTO appTypeDTO, String username) {
         AppType appType = appTypeMapper.toEntity(appTypeDTO, username);
-        Set<SubType> subTypes = prepareSubTypes(appType, appTypeDTO.getSubTypes(), username);
+        Set<SubType> subTypes = subTypeService.prepareSubTypes(appType, appTypeDTO.getSubTypes(), username);
         appType.setSubTypes(subTypes);
         appTypeRepository.save(appType);
     }
 
     @Override
-    public Set<SubType> prepareSubTypes(AppType appType, Set<SubTypeDTO> subTypeDTOS, String username) {
-
-        return subTypeDTOS.stream()
-                .map(subTypeDTO -> {
-                    SubType subType = appTypeMapper.toSubTypeEntity(appType, subTypeDTO, username);
-                    Set<Category> categories =  categoryService.prepareCategories(appType, subType, username, subTypeDTO.getCategories());
-                    subType.setCategories(categories);
-                    return subType;
-                })
-                .collect(Collectors.toSet());
+    public void updateAppType(AppTypeDTO appTypeDTO, String username) {
+        Long id = appTypeDTO.getId();
+        if(id == null)
+            throw  new IllegalArgumentException("AppType id cannot be null");
+        AppType appType = appTypeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No AppType for given id " + id));
+        appTypeMapper.updateEntityFromDTO(appTypeDTO, appType);
+        appType.setLast_updated_by(username);
+        appType.setSubTypes(subTypeService.prepareSubTypesForUpdate(appType, appTypeDTO.getSubTypes(), username));
+        appTypeRepository.save(appType);
     }
+
 }

@@ -1,9 +1,7 @@
 package com.clm.category.models;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -13,6 +11,8 @@ import java.util.Set;
 @Setter
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
 

@@ -13,9 +13,10 @@ public interface OptionService {
     OptionDTO findById(Long id);
     List<OptionDTO> findByCategoryId(Long categoryId);
 //    OptionDTO create(OptionDTO optionDTO);
-    OptionDTO update(Long id, OptionDTO optionDTO);
+//    OptionDTO update(Long id, OptionDTO optionDTO);
     void delete(Long id);
     OptionDTO moveToCategory(Long optionId, Long newCategoryId);
 
     Set<Option> prepareOptions(Category category, Set<OptionDTO> optionDTOS, String username);
+    Set<Option> prepareOptionsForUpdate(Category category, Set<OptionDTO> optionDTOS, String username);
 }

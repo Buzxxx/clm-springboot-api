@@ -18,4 +18,5 @@ public interface CategoryService {
     CategoryDTO addOptionToCategory(Long categoryId, Long optionId);
     CategoryDTO removeOptionFromCategory(Long categoryId, Long optionId);
     Set<Category> prepareCategories(AppType appType, SubType subType, String username, Set<CategoryDTO> categoryDTOS);
+    Set<Category> prepareCategoriesForUpdate(AppType appType, SubType subType, String username, Set<CategoryDTO> categoryDTOS);
 }

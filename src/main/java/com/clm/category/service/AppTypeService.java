@@ -13,6 +13,7 @@ public interface AppTypeService {
     List<AppTypeDTO> getAllAppTypes();
     AppTypeDTO getAppTypeDetailsById(Long id);
     void createAppType(AppTypeDTO appTypeDTO, String username);
-    Set<SubType> prepareSubTypes(AppType appType, Set<SubTypeDTO> subTypeDTOS, String username);
-
+//    Set<SubType> prepareSubTypes(AppType appType, Set<SubTypeDTO> subTypeDTOS, String username);
+//    Set<SubType> prepareSubTypesForUpdate(AppType appType, Set<SubTypeDTO> subTypeDTOS, String username);
+    void updateAppType(AppTypeDTO appTypeDTO, String username);
 }

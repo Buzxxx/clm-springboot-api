@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @Component
 public class AppTypeMapper {
 
-    private final CategoryMapper categoryMapper;
+    private final SubTypeMapper subTypeMapper;
 
-    public AppTypeMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
+    public AppTypeMapper(SubTypeMapper subTypeMapper) {
+        this.subTypeMapper = subTypeMapper;
     }
 
     public AppTypeDTO toDTO(AppType appType) {
@@ -35,17 +35,7 @@ public class AppTypeMapper {
                 appType.getDescription(),
                 appType.getImage(),
                 appType.getSubTypes().stream()
-                        .map(this::mapSubType)
-                        .collect(Collectors.toSet())
-        );
-    }
-
-    public SubTypeDTO mapSubType(SubType subType) {
-        return new SubTypeDTO(
-                subType.getId(),
-                subType.getName(),
-                subType.getCategories().stream()
-                        .map(categoryMapper::toDTO)
+                        .map(subTypeMapper::mapSubType)
                         .collect(Collectors.toSet())
         );
     }
@@ -61,18 +51,10 @@ public class AppTypeMapper {
                 .build();
     }
 
-    public SubType toSubTypeEntity(AppType appType, SubTypeDTO subTypeDTO, String username) {
-        return SubType.builder()
-                .name(subTypeDTO.getName())
-                .created_by(username)
-                .last_updated_by(username)
-                .appType(appType)
-                .build();
+    public void updateEntityFromDTO(AppTypeDTO appTypeDTO, AppType appType) {
+        appType.setName(appTypeDTO.getName());
+        appType.setDescription(appTypeDTO.getDescription());
+        appType.setImage(appTypeDTO.getImage());
     }
 
-    public Set<SubType> toSubTypeEntitySet(AppType appType, Set<SubTypeDTO> subTypeDTOS, String username) {
-        return subTypeDTOS.stream()
-                .map(subTypeDTO -> { return this.toSubTypeEntity(appType, subTypeDTO, username);})
-                .collect(Collectors.toSet());
-    }
 }
